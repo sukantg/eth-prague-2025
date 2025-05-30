@@ -57,14 +57,6 @@ const config: HardhatUserConfig = {
         enabled: process.env.MAINNET_FORKING_ENABLED === "true",
       },
     },
-    flow: {
-      url: "https://mainnet.evm.nodes.onflow.org",
-      accounts: [process.env.DEPLOY_WALLET_1 as string],
-    },
-    flowTestnet: {
-      url: "https://testnet.evm.nodes.onflow.org",
-      accounts: [process.env.DEPLOY_WALLET_1 as string],
-    },
     mainnet: {
       url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
@@ -166,28 +158,8 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       mainnet: `${etherscanApiKey}`,
-      // Is not required by blockscout. Can be any non-empty string
-      flow: "abc",
-      flowTestnet: "abc",
     },
-    customChains: [
-      {
-        network: "flow",
-        chainId: 747,
-        urls: {
-          apiURL: "https://evm.flowscan.io/api",
-          browserURL: "https://evm.flowscan.io/",
-        },
-      },
-      {
-        network: "flowTestnet",
-        chainId: 545,
-        urls: {
-          apiURL: "https://evm-testnet.flowscan.io/api",
-          browserURL: "https://evm-testnet.flowscan.io/",
-        },
-      },
-    ],
+    customChains: [],
   },
   // Configuration for etherscan-verify from hardhat-deploy plugin
   verify: {
