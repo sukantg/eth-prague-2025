@@ -42,7 +42,7 @@ export default function HomePage() {
             <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
               Buy and sell second-hand goods —{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-emerald-600">
-                with verified humans&apos;
+                with verified humans
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed">
