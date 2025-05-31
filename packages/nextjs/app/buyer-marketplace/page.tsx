@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -125,7 +125,7 @@ const mockPastPurchases = [
   },
 ];
 
-export default function BuyerMarketplace() {
+function BuyerMarketplaceContent() {
   const searchParams = useSearchParams();
   const [isVerified, setIsVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -654,5 +654,22 @@ export default function BuyerMarketplace() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function BuyerMarketplace() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 to-emerald-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-600">Loading marketplace...</p>
+          </div>
+        </div>
+      }
+    >
+      <BuyerMarketplaceContent />
+    </Suspense>
   );
 }
