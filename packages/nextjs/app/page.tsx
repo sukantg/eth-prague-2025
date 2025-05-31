@@ -1,12 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FileText, Github, MessageCircle, Shield, Twitter, Users, Zap } from "lucide-react";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent } from "~~/components/ui/card";
 
+// Dynamically import the connect button with no SSR
+const ConnectButton = dynamic(() => Promise.resolve(RainbowKitCustomConnectButton), {
+  ssr: false,
+});
+
 export default function HomePage() {
+  const [currentYear, setCurrentYear] = useState("2024");
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear().toString());
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-emerald-50">
       {/* Header */}
@@ -29,7 +42,7 @@ export default function HomePage() {
               <Link href="#docs" className="text-slate-600 hover:text-slate-800 transition-colors">
                 Docs
               </Link>
-              <RainbowKitCustomConnectButton />
+              <ConnectButton />
             </nav>
           </div>
         </div>
@@ -187,31 +200,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-slate-800 to-slate-700">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Trade with Trust?</h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Join the future of decentralized commerce where every transaction is secure and every user is verified.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Get Started Now
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-slate-800 px-8 py-4 text-lg rounded-xl transition-all duration-300"
-            >
-              View Documentation
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200">
         <div className="container mx-auto px-4 py-12">
@@ -311,9 +299,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-slate-200 mt-8 pt-8 text-center">
-            <p className="text-slate-600">
-              © {new Date().getFullYear()} Trust Bazaar. All rights reserved. Built on Flow EVM.
-            </p>
+            <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved. Built on Flow EVM.</p>
           </div>
         </div>
       </footer>

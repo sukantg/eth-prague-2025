@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Plus, Star, Eye, Edit, Trash2, Upload, ArrowLeft, CheckCircle, Globe } from "lucide-react"
+import { Shield, Plus, Star, Eye, Edit, Trash2, ArrowLeft, CheckCircle, Globe, X, Camera } from "lucide-react"
 import Link from "next/link"
 
 // Mock data for listings
@@ -58,6 +58,9 @@ export default function SellerDashboard() {
     category: "",
     condition: "",
   })
+  const [uploadedImages, setUploadedImages] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true)
@@ -68,13 +71,44 @@ export default function SellerDashboard() {
     }, 2000)
   }
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || [])
+    const remainingSlots = 3 - uploadedImages.length
+    const filesToAdd = files.slice(0, remainingSlots)
+
+    if (filesToAdd.length > 0) {
+      const newImages = [...uploadedImages, ...filesToAdd]
+      setUploadedImages(newImages)
+
+      // Create preview URLs
+      const newPreviews = filesToAdd.map((file) => URL.createObjectURL(file))
+      setImagePreviews((prev) => [...prev, ...newPreviews])
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
+  const removeImage = (index: number) => {
+    const newImages = uploadedImages.filter((_, i) => i !== index)
+    const newPreviews = imagePreviews.filter((_, i) => i !== index)
+
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(imagePreviews[index])
+
+    setUploadedImages(newImages)
+    setImagePreviews(newPreviews)
+  }
+
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault()
     const product = {
       id: listings.length + 1,
       title: newProduct.title,
       price: `${newProduct.price} FLOW`,
-      image: "/placeholder.svg?height=200&width=200",
+      image: imagePreviews[0] || "/placeholder.svg?height=200&width=200",
       status: "Active",
       views: 0,
       likes: 0,
@@ -82,6 +116,8 @@ export default function SellerDashboard() {
     }
     setListings([product, ...listings])
     setNewProduct({ title: "", description: "", price: "", category: "", condition: "" })
+    setUploadedImages([])
+    setImagePreviews([])
   }
 
   const handleDeleteListing = (id: number) => {
@@ -233,89 +269,176 @@ export default function SellerDashboard() {
 
           {/* Add Product Tab */}
           <TabsContent value="add-product">
-            <Card className="max-w-2xl mx-auto shadow-lg rounded-2xl border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Plus className="h-5 w-5" />
-                  <span>Add New Product</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddProduct} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Product Title</Label>
-                    <Input
-                      id="title"
-                      value={newProduct.title}
-                      onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
-                      placeholder="Enter product title"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={newProduct.description}
-                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                      placeholder="Describe your product in detail"
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="price">Price (FLOW)</Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        step="0.1"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                        placeholder="0.0"
-                        required
-                      />
+            <div className="max-w-4xl mx-auto">
+              <Card className="shadow-xl rounded-3xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <CardTitle className="flex items-center space-x-3 text-2xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-600 rounded-xl flex items-center justify-center">
+                      <Plus className="h-5 w-5 text-white" />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="category">Category</Label>
-                      <Input
-                        id="category"
-                        value={newProduct.category}
-                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                        placeholder="e.g., Electronics, Fashion"
-                        required
-                      />
+                    <span>Add New Product</span>
+                  </CardTitle>
+                  <p className="text-slate-600 mt-2">Create an NFT listing for your item on the marketplace</p>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                  <form onSubmit={handleAddProduct} className="space-y-8">
+                    {/* Product Images Section */}
+                    <div className="space-y-4">
+                      <Label className="text-lg font-semibold text-slate-800">Product Images</Label>
+                      <p className="text-sm text-slate-600">Upload up to 3 high-quality images of your product</p>
+
+                      {/* Image Upload Grid */}
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Uploaded Images */}
+                        {imagePreviews.map((preview, index) => (
+                          <div key={index} className="relative group">
+                            <div className="aspect-square border-2 border-emerald-200 rounded-2xl overflow-hidden bg-white shadow-lg">
+                              <img
+                                src={preview || "/placeholder.svg"}
+                                alt={`Product ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeImage(index)}
+                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+
+                        {/* Upload Slots */}
+                        {Array.from({ length: 3 - imagePreviews.length }).map((_, index) => (
+                          <div key={`empty-${index}`}>
+                            <input
+                              ref={index === 0 ? fileInputRef : undefined}
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              id={`image-upload-${index}`}
+                            />
+                            <label
+                              htmlFor={`image-upload-${index}`}
+                              className="aspect-square border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-slate-400 hover:bg-slate-50 transition-all duration-200 bg-white shadow-sm"
+                            >
+                              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
+                                <Camera className="h-6 w-6 text-slate-500" />
+                              </div>
+                              <p className="text-sm font-medium text-slate-600 text-center">
+                                {index === 0 && imagePreviews.length === 0 ? "Add Photos" : "Add More"}
+                              </p>
+                              <p className="text-xs text-slate-500 text-center mt-1">PNG, JPG up to 10MB</p>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="condition">Condition</Label>
-                    <Input
-                      id="condition"
-                      value={newProduct.condition}
-                      onChange={(e) => setNewProduct({ ...newProduct, condition: e.target.value })}
-                      placeholder="e.g., Like New, Good, Fair"
-                      required
-                    />
-                  </div>
+                    {/* Product Details Section */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {/* Left Column */}
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label htmlFor="title" className="text-base font-semibold text-slate-800">
+                            Product Title *
+                          </Label>
+                          <Input
+                            id="title"
+                            value={newProduct.title}
+                            onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
+                            placeholder="Enter a descriptive title"
+                            required
+                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                          />
+                        </div>
 
-                  <div className="space-y-2">
-                    <Label>Product Images</Label>
-                    <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-slate-400 transition-colors">
-                      <Upload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                      <p className="text-slate-600">Click to upload images or drag and drop</p>
-                      <p className="text-sm text-slate-500">PNG, JPG up to 10MB</p>
+                        <div className="space-y-3">
+                          <Label htmlFor="price" className="text-base font-semibold text-slate-800">
+                            Price (FLOW) *
+                          </Label>
+                          <Input
+                            id="price"
+                            type="number"
+                            step="0.1"
+                            value={newProduct.price}
+                            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                            placeholder="0.0"
+                            required
+                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label htmlFor="category" className="text-base font-semibold text-slate-800">
+                            Category *
+                          </Label>
+                          <Input
+                            id="category"
+                            value={newProduct.category}
+                            onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                            placeholder="e.g., Electronics, Fashion, Books"
+                            required
+                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Right Column */}
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label htmlFor="condition" className="text-base font-semibold text-slate-800">
+                            Condition *
+                          </Label>
+                          <Input
+                            id="condition"
+                            value={newProduct.condition}
+                            onChange={(e) => setNewProduct({ ...newProduct, condition: e.target.value })}
+                            placeholder="e.g., Like New, Good, Fair"
+                            required
+                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label htmlFor="description" className="text-base font-semibold text-slate-800">
+                            Description *
+                          </Label>
+                          <Textarea
+                            id="description"
+                            value={newProduct.description}
+                            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                            placeholder="Describe your product in detail. Include condition, features, and any defects."
+                            rows={6}
+                            required
+                            className="border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 resize-none"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl">
-                    Create NFT & List Product
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                    {/* Submit Button */}
+                    <div className="pt-6 border-t border-slate-200">
+                      <Button
+                        type="submit"
+                        className="w-full h-14 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <Plus className="h-5 w-5 mr-2" />
+                        Create NFT & List Product
+                      </Button>
+                      <p className="text-sm text-slate-500 text-center mt-3">
+                        Your item will be minted as an NFT and listed on the marketplace
+                      </p>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* My Listings Tab */}
