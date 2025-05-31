@@ -1,21 +1,21 @@
-# Proof Bazaar
+# Trust Bazaar
 
 A Verified P2P Marketplace for Real-World Goods using World ID + Escrow + NFTs
 
-## 🔗 Overview
+##  Overview
 
 Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
 
-## ✨ Features
+## Features
 
-- ✅ World ID Verification for Human Identity
-- ✅ List physical items as ERC-721 NFTs
-- ✅ Pay in USDC, held in on-chain escrow
-- ✅ Release funds/NFTs only after buyer confirms
-- ✅ Bidding system with refundable outbid flow
-- ✅ Fully non-custodial listings
+- World ID Verification for Human Identity
+- List physical items as ERC-721 NFTs
+- Pay in USDC, held in on-chain escrow
+- Release funds/NFTs only after buyer confirms
+- Bidding system with refundable outbid flow
+- Fully non-custodial listings
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tech / Library |
 |-------|----------------|
@@ -25,7 +25,7 @@ Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escr
 | UI (optional) | Scaffold-ETH v2, RainbowKit, Ethers.js |
 | Tokens | USDC (ERC-20) |
 
-## ⚙️ Contract Architecture
+## Contract Architecture
 
 ### Marketplace.sol
 Main smart contract containing:
