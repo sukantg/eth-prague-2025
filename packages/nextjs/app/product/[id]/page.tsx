@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+// import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,12 +20,12 @@ const mockProduct = {
   condition: "Like New",
   likes: 24,
   description:
-    "Genuine leather jacket from the 90s in excellent condition. Made from high-quality leather with minimal wear. Features include multiple pockets, adjustable cuffs, and a comfortable lining. Perfect for collectors or those looking for a timeless piece.",
+    "Genuine leather jacket from the 90s in excellent condition. Made from premium leather with excellent craftsmanship. Shows minimal signs of wear and comes with original lining intact.",
   category: "Fashion",
   currentBids: [
-    { amount: "150 USDC", bidder: "Bob Smith", time: "2 hours ago" },
-    { amount: "140 USDC", bidder: "Charlie Brown", time: "3 hours ago" },
-    { amount: "130 USDC", bidder: "Diana Miller", time: "5 hours ago" },
+    { bidder: "John Smith", amount: "150 USDC", timestamp: "2024-03-15T10:30:00" },
+    { bidder: "Sarah Davis", amount: "140 USDC", timestamp: "2024-03-15T09:45:00" },
+    { bidder: "Mike Wilson", amount: "130 USDC", timestamp: "2024-03-15T09:00:00" },
   ],
 };
 
@@ -37,6 +37,8 @@ const mockBuyer = {
 };
 
 export default function ProductPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setActiveTab] = useState<"buy" | "bid">("buy");
   const [bidAmount, setBidAmount] = useState("");
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -65,9 +67,9 @@ export default function ProductPage() {
       setBidAmount("");
       // Here you would typically update the bids list
       const newBid = {
-        amount: `${bidAmount} USDC`,
         bidder: buyerInfo.name,
-        time: "Just now",
+        amount: `${bidAmount} USDC`,
+        timestamp: new Date().toISOString(),
       };
       mockProduct.currentBids.unshift(newBid);
     }, 1500);
@@ -100,37 +102,22 @@ export default function ProductPage() {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Image Section */}
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden aspect-square relative group">
-              <Image
+            <div className="aspect-square bg-white rounded-3xl overflow-hidden shadow-xl">
+              <img
                 src={mockProduct.image}
                 alt={mockProduct.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute top-4 right-4 flex space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsWalletConnected(false)}
-                  className={`h-10 w-10 rounded-full ${
-                    isWalletConnected
-                      ? "bg-red-100 text-red-600 hover:bg-red-200"
-                      : "bg-white/80 text-slate-600 hover:bg-white"
-                  }`}
-                >
-                  <Heart className={`h-5 w-5 ${isWalletConnected ? "fill-current" : ""}`} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-full bg-white/80 text-slate-600 hover:bg-white"
-                >
-                  <Package className="h-5 w-5" />
-                </Button>
-              </div>
-              <Badge className="absolute top-4 left-4 bg-emerald-100 text-emerald-800">{mockProduct.condition}</Badge>
+            </div>
+            <div className="flex gap-4">
+              <Button variant="outline" className="flex-1 py-6 text-lg rounded-2xl hover:bg-slate-50 transition-colors">
+                <Heart className="h-5 w-5 mr-2" />
+                Add to Wishlist
+              </Button>
+              <Button variant="outline" className="flex-1 py-6 text-lg rounded-2xl hover:bg-slate-50 transition-colors">
+                <Package className="h-5 w-5 mr-2" />
+                Share
+              </Button>
             </div>
           </div>
 
@@ -177,12 +164,14 @@ export default function ProductPage() {
               <TabsList className="grid w-full grid-cols-2 p-1 bg-slate-100 rounded-2xl">
                 <TabsTrigger
                   value="buy"
+                  onClick={() => setActiveTab("buy")}
                   className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-xl"
                 >
                   Buy Now
                 </TabsTrigger>
                 <TabsTrigger
                   value="bid"
+                  onClick={() => setActiveTab("bid")}
                   className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-xl"
                 >
                   Place Bid
@@ -300,7 +289,7 @@ export default function ProductPage() {
                                   </div>
                                   <div>
                                     <p className="font-medium text-slate-800">{bid.bidder}</p>
-                                    <p className="text-sm text-slate-500">{bid.time}</p>
+                                    <p className="text-sm text-slate-500">{new Date(bid.timestamp).toLocaleString()}</p>
                                   </div>
                                 </div>
                                 <p className="text-lg font-bold text-slate-800">{bid.amount}</p>

@@ -520,15 +520,15 @@ export default function BuyerMarketplace() {
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
                         <p className="text-slate-600">{buyerInfo.email}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Location</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Location</label>
                         <p className="text-slate-600">{buyerInfo.location}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Shipping Address</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Shipping Address</label>
                         <p className="text-slate-600">{buyerInfo.address}</p>
                       </div>
                     </div>
@@ -541,6 +541,17 @@ export default function BuyerMarketplace() {
                           <span className="font-medium">Verified Buyer</span>
                         </div>
                         <p className="text-sm text-slate-600 mt-2">Your account has been verified with World ID</p>
+                      </div>
+
+                      <div className="bg-slate-50 rounded-2xl p-6">
+                        <h4 className="text-lg font-semibold text-slate-900 mb-4">Merit Points</h4>
+                        <div className="flex items-center space-x-2 text-amber-600">
+                          <Star className="h-5 w-5" />
+                          <span className="text-2xl font-bold">{meritPoints}</span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2">
+                          Earn points by making purchases and participating in the marketplace
+                        </p>
                       </div>
                     </div>
                   </div>
