@@ -98,6 +98,33 @@ const mockMarketplaceItems = [
 // Mock data for past purchases
 const mockPastPurchases = [
   {
+    id: 6,
+    title: "Vintage Camera",
+    price: "250 USDC",
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=500&fit=crop",
+    seller: "Liam Anderson",
+    purchaseDate: "2024-01-22",
+    status: "Bid in Progress",
+  },
+  {
+    id: 8,
+    title: "Limited Edition Sneakers",
+    price: "350 USDC",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&h=500&fit=crop",
+    seller: "Noah Parker",
+    purchaseDate: "2024-01-19",
+    status: "Bid Accepted",
+  },
+  {
+    id: 4,
+    title: "Designer Sunglasses",
+    price: "180 USDC",
+    image: "https://images.unsplash.com/photo-1577803645773-f96470509666?w=500&h=500&fit=crop",
+    seller: "Jack Wilson",
+    purchaseDate: "2024-01-20",
+    status: "In Transit",
+  },
+  {
     id: 1,
     title: "Vintage Watch",
     price: "280 USDC",
@@ -115,15 +142,6 @@ const mockPastPurchases = [
     purchaseDate: "2024-01-10",
     status: "Delivered",
   },
-  {
-    id: 3,
-    title: "Coffee Table",
-    price: "95 USDC",
-    image: "https://images.unsplash.com/photo-1532372320572-cda25653a26f?w=500&h=500&fit=crop",
-    seller: "Ivy Martinez",
-    purchaseDate: "2024-01-05",
-    status: "In Transit",
-  },
 ];
 
 function BuyerMarketplaceContent() {
@@ -133,8 +151,10 @@ function BuyerMarketplaceContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [likedItems, setLikedItems] = useState<number[]>([]);
-  const [meritPoints] = useState(450);
+  const [trustPoints, setTrustPoints] = useState(450);
   const [showCardPayment, setShowCardPayment] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [purchases, setPurchases] = useState(mockPastPurchases);
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -192,6 +212,14 @@ function BuyerMarketplaceContent() {
       cvv: "",
       name: "",
     });
+  };
+
+  const handleConfirmReceived = (purchaseId: number) => {
+    setPurchases(prevPurchases =>
+      prevPurchases.map(purchase => (purchase.id === purchaseId ? { ...purchase, status: "Delivered" } : purchase)),
+    );
+    setTrustPoints(prevPoints => prevPoints + 100);
+    setShowConfirmationModal(true);
   };
 
   if (!isVerified) {
@@ -319,9 +347,9 @@ function BuyerMarketplaceContent() {
               <div className="text-center">
                 <div className="flex items-center space-x-2">
                   <Star className="h-5 w-5 text-amber-500" />
-                  <span className="text-2xl font-bold text-slate-800">{meritPoints}</span>
+                  <span className="text-2xl font-bold text-slate-800">{trustPoints}</span>
                 </div>
-                <p className="text-sm text-slate-600">Merit Points</p>
+                <p className="text-sm text-slate-600">Trust Points</p>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800">{likedItems.length}</div>
@@ -449,11 +477,11 @@ function BuyerMarketplaceContent() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-800">Your Purchase History</h2>
-                <p className="text-slate-600">{mockPastPurchases.length} total purchases</p>
+                <p className="text-slate-600">{purchases.length} total purchases</p>
               </div>
 
               <div className="space-y-4">
-                {mockPastPurchases.map(purchase => (
+                {purchases.map(purchase => (
                   <Card key={purchase.id} className="shadow-lg rounded-2xl border-0">
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4">
@@ -478,16 +506,28 @@ function BuyerMarketplaceContent() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-lg font-bold text-slate-800">{purchase.price}</span>
-                            <Badge
-                              className={`${
-                                purchase.status === "Delivered"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-amber-100 text-amber-800"
-                              }`}
-                            >
-                              <Package className="h-3 w-3 mr-1" />
-                              {purchase.status}
-                            </Badge>
+                            <div className="flex items-center space-x-4">
+                              <Badge
+                                className={`${
+                                  purchase.status === "Delivered"
+                                    ? "bg-emerald-100 text-emerald-800"
+                                    : purchase.status === "Bid Accepted"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : "bg-amber-100 text-amber-800"
+                                }`}
+                              >
+                                <Package className="h-3 w-3 mr-1" />
+                                {purchase.status}
+                              </Badge>
+                              {(purchase.status === "In Transit" || purchase.status === "Bid Accepted") && (
+                                <Button
+                                  className="bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+                                  onClick={() => handleConfirmReceived(purchase.id)}
+                                >
+                                  Confirm Received
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -496,7 +536,7 @@ function BuyerMarketplaceContent() {
                 ))}
               </div>
 
-              {mockPastPurchases.length === 0 && (
+              {purchases.length === 0 && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Package className="h-8 w-8 text-slate-400" />
@@ -668,7 +708,7 @@ function BuyerMarketplaceContent() {
       {showCardPayment && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowCardPayment(false)} />
-          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-2xl">
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-slate-900">Card Payment</h3>
@@ -773,6 +813,39 @@ function BuyerMarketplaceContent() {
           Pay with Card
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowConfirmationModal(false)}
+          />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Thank You!</h3>
+              <p className="text-slate-600 mb-6">
+                Thank you for confirming your receipt. Weve awarded you 100 trust points for your feedback.
+              </p>
+              <div className="bg-slate-50 rounded-xl p-4 mb-6 w-full">
+                <div className="flex items-center justify-center space-x-2">
+                  <Star className="h-5 w-5 text-amber-500" />
+                  <span className="text-lg font-semibold text-slate-800">+100 Trust Points</span>
+                </div>
+              </div>
+              <Button
+                onClick={() => setShowConfirmationModal(false)}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
