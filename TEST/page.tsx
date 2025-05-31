@@ -1,10 +1,7 @@
-"use client";
-
-import Link from "next/link";
-import { FileText, Github, MessageCircle, Shield, Twitter, Users, Zap } from "lucide-react";
-import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
-import { Button } from "~~/components/ui/button";
-import { Card, CardContent } from "~~/components/ui/card";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Shield, Users, Zap, Github, FileText, Twitter, MessageCircle } from "lucide-react"
+import Link from "next/link"
 
 export default function HomePage() {
   return (
@@ -29,7 +26,9 @@ export default function HomePage() {
               <Link href="#docs" className="text-slate-600 hover:text-slate-800 transition-colors">
                 Docs
               </Link>
-              <RainbowKitCustomConnectButton />
+              <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+                Connect Wallet
+              </Button>
             </nav>
           </div>
         </div>
@@ -141,7 +140,7 @@ export default function HomePage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-2">Verify Your Identity</h3>
                     <p className="text-slate-600">
-                      Connect your wallet and verify with World ID to prove youre a real human.
+                      Connect your wallet and verify with World ID to prove you're a real human.
                     </p>
                   </div>
                 </div>
@@ -318,5 +317,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  );
+  )
 }
