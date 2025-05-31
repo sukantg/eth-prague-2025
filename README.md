@@ -4,7 +4,7 @@ A Verified P2P Marketplace for Real-World Goods using World ID + Escrow + NFTs
 
 ## 🌐 Live Demo
 
-View the live application at [Trust Bazaar](https://trust-bazaar.vercel.app/){:target="_blank"}
+View the live application at [Trust Bazaar](https://trust-bazaar.vercel.app/)
 
 ## Overview
 
