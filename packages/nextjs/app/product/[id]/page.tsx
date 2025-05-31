@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CreditCard, Heart, Package, ShoppingCart, Star, User, Wallet, X } from "lucide-react";
+import { ArrowLeft, CheckCircle, CreditCard, Heart, Package, ShoppingCart, Star, User, Wallet, X } from "lucide-react";
 
 // Mock data for a single product
 const mockProduct = {
@@ -45,6 +45,7 @@ export default function ProductPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [buyerInfo, setBuyerInfo] = useState<typeof mockBuyer | null>(null);
   const [showCardPayment, setShowCardPayment] = useState(false);
+  const [showOrderConfirmationModal, setShowOrderConfirmationModal] = useState(false);
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -87,6 +88,7 @@ export default function ProductPage() {
     e.preventDefault();
     // Handle card payment submission
     setShowCardPayment(false);
+    setShowOrderConfirmationModal(true);
     // Reset form
     setCardDetails({
       cardNumber: "",
@@ -94,6 +96,10 @@ export default function ProductPage() {
       cvv: "",
       name: "",
     });
+  };
+
+  const handleCompletePurchase = () => {
+    setShowOrderConfirmationModal(true);
   };
 
   return (
@@ -244,7 +250,10 @@ export default function ProductPage() {
                           <p className="font-medium text-lg">Wallet Connected</p>
                           <p className="text-sm mt-1">0x1234...5678</p>
                         </div>
-                        <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl">
+                        <Button
+                          className="w-full bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
+                          onClick={handleCompletePurchase}
+                        >
                           <ShoppingCart className="h-5 w-5 mr-2" />
                           Complete Purchase
                         </Button>
@@ -454,6 +463,45 @@ export default function ProductPage() {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Confirmation Modal */}
+      {showOrderConfirmationModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowOrderConfirmationModal(false)}
+          />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Order Confirmed!</h3>
+              <div className="space-y-4 text-slate-600 mb-6">
+                <p>
+                  Thank you for your purchase on Trust Bazaar. Your order has been successfully processed and confirmed.
+                </p>
+                <p>
+                  Our seller has been notified and will prepare your item for shipping. You&apos;ll receive a
+                  notification once your order is shipped.
+                </p>
+                <p className="text-sm text-slate-500">
+                  Order ID: #TB-
+                  {Math.floor(Math.random() * 1000000)
+                    .toString()
+                    .padStart(6, "0")}
+                </p>
+              </div>
+              <Button
+                onClick={() => setShowOrderConfirmationModal(false)}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Close
+              </Button>
             </div>
           </div>
         </div>

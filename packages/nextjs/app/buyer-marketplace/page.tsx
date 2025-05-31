@@ -154,6 +154,7 @@ function BuyerMarketplaceContent() {
   const [trustPoints, setTrustPoints] = useState(450);
   const [showCardPayment, setShowCardPayment] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showOrderConfirmationModal, setShowOrderConfirmationModal] = useState(false);
   const [purchases, setPurchases] = useState(mockPastPurchases);
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
@@ -205,6 +206,7 @@ function BuyerMarketplaceContent() {
     e.preventDefault();
     // Handle card payment submission
     setShowCardPayment(false);
+    setShowOrderConfirmationModal(true);
     // Reset form
     setCardDetails({
       cardNumber: "",
@@ -236,7 +238,7 @@ function BuyerMarketplaceContent() {
                 <span className="text-xl font-bold text-slate-800">Trust Bazaar</span>
               </Link>
               <Link href="/">
-                <Button variant="ghost" className="flex items-center space-x-2">
+                <Button variant="ghost" className="flex items-center space-x-2 text-slate-800">
                   <ArrowLeft className="h-4 w-4" />
                   <span>Back to Home</span>
                 </Button>
@@ -325,7 +327,7 @@ function BuyerMarketplaceContent() {
                 Verified Buyer
               </Badge>
               <Link href="/">
-                <Button variant="ghost" className="flex items-center space-x-2">
+                <Button variant="ghost" className="flex items-center space-x-2 text-slate-800">
                   <ArrowLeft className="h-4 w-4" />
                   <span>Back to Home</span>
                 </Button>
@@ -392,7 +394,7 @@ function BuyerMarketplaceContent() {
                       className={`whitespace-nowrap rounded-xl ${
                         selectedCategory === category
                           ? "bg-slate-800 text-white"
-                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                          : "border-slate-200 text-slate-800 hover:bg-slate-50"
                       }`}
                     >
                       {category}
@@ -419,9 +421,7 @@ function BuyerMarketplaceContent() {
                         size="sm"
                         onClick={() => toggleLike(item.id)}
                         className={`absolute top-3 right-3 h-8 w-8 rounded-full ${
-                          likedItems.includes(item.id)
-                            ? "bg-red-100 text-red-600 hover:bg-red-200"
-                            : "bg-white/80 text-slate-600 hover:bg-white"
+                          likedItems.includes(item.id) ? "bg-red-100 text-red-600" : "bg-white/80 text-slate-800"
                         }`}
                       >
                         <Heart className={`h-4 w-4 ${likedItems.includes(item.id) ? "fill-current" : ""}`} />
@@ -573,7 +573,7 @@ function BuyerMarketplaceContent() {
                         <h2 className="text-2xl font-bold text-slate-800">{buyerInfo.name}</h2>
                       </div>
                     </div>
-                    <Button onClick={() => setIsEditing(true)} variant="outline" className="rounded-xl">
+                    <Button onClick={() => setIsEditing(true)} variant="outline" className="rounded-xl text-slate-800">
                       Edit Profile
                     </Button>
                   </div>
@@ -618,7 +618,7 @@ function BuyerMarketplaceContent() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-slate-900">Edit Profile</h3>
-                    <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="h-8 w-8 p-0">
+                    <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="h-8 w-8 p-0 text-slate-800">
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
@@ -688,7 +688,7 @@ function BuyerMarketplaceContent() {
                         type="button"
                         variant="outline"
                         onClick={handleCancelEdit}
-                        className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                        className="px-6 py-2 border-slate-200 text-slate-800 hover:bg-slate-50"
                       >
                         Cancel
                       </Button>
@@ -712,7 +712,12 @@ function BuyerMarketplaceContent() {
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-slate-900">Card Payment</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowCardPayment(false)} className="h-8 w-8 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCardPayment(false)}
+                  className="h-8 w-8 p-0 text-slate-800"
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -787,7 +792,7 @@ function BuyerMarketplaceContent() {
                     type="button"
                     variant="outline"
                     onClick={() => setShowCardPayment(false)}
-                    className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                    className="px-6 py-2 border-slate-200 text-slate-800 hover:bg-slate-50"
                   >
                     Cancel
                   </Button>
@@ -806,10 +811,7 @@ function BuyerMarketplaceContent() {
         <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center">
           <CreditCard className="h-3 w-3 text-slate-600" />
         </div>
-        <button
-          onClick={() => setShowCardPayment(true)}
-          className="text-slate-600 hover:text-slate-800 transition-colors"
-        >
+        <button onClick={() => setShowCardPayment(true)} className="text-slate-800">
           Pay with Card
         </button>
       </div>
@@ -838,6 +840,33 @@ function BuyerMarketplaceContent() {
               </div>
               <Button
                 onClick={() => setShowConfirmationModal(false)}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Confirmation Modal */}
+      {showOrderConfirmationModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowOrderConfirmationModal(false)}
+          />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Order Received!</h3>
+              <p className="text-slate-600 mb-6">
+                Your product will be shipped soon. Thank you for using Trust Bazaar.
+              </p>
+              <Button
+                onClick={() => setShowOrderConfirmationModal(false)}
                 className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
               >
                 Close
