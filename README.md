@@ -17,13 +17,13 @@ Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escr
 
 ## Tech Stack
 
-| Layer         | Tech / Library                         |
-| ------------- | -------------------------------------- |
-| Blockchain    | Solidity, Hardhat, Flow EVM (or local) |
-| Escrow Logic  | Built-in within single Marketplace.sol |
-| Verification  | World ID                               |
-| UI (optional) | Scaffold-ETH v2, RainbowKit, Ethers.js |
-| Tokens        | USDC (ERC-20)                          |
+| Layer        | Tech / Library                         |
+| ------------ | -------------------------------------- |
+| Blockchain   | Solidity, Hardhat, Flow EVM (or local) |
+| Escrow Logic | Built-in within single Marketplace.sol |
+| Verification | World ID                               |
+| UI           | Scaffold-ETH v2, RainbowKit, Ethers.js |
+| Tokens       | USDC (ERC-20)                          |
 
 ## Contract Architecture
 
@@ -126,8 +126,7 @@ function cancelListing(uint tokenId)
 
 - Add dispute resolution window
 - Integrate IPFS or Filecoin for metadata
-- Escrow auto-release on timeout (optional)
-- Frontend via Scaffold-ETH v2 + World App MiniKit
+- Escrow auto-release on timeout
 
 Built by Sukant Ghosh
 
