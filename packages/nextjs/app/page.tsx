@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FileText, Github, MessageCircle, Shield, Twitter, Users, Zap } from "lucide-react";
+import { Instagram, Linkedin, Shield, Twitter, Users, Zap } from "lucide-react";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent } from "~~/components/ui/card";
@@ -38,9 +38,6 @@ export default function HomePage() {
               </Link>
               <Link href="#features" className="text-slate-600 hover:text-slate-800 transition-colors">
                 Features
-              </Link>
-              <Link href="#docs" className="text-slate-600 hover:text-slate-800 transition-colors">
-                Docs
               </Link>
               <ConnectButton />
             </nav>
@@ -210,16 +207,10 @@ export default function HomePage() {
                 <span className="text-xl font-bold text-slate-800">Trust Bazaar</span>
               </div>
               <p className="text-slate-600 mb-6 max-w-md">
-                The decentralized marketplace where trust meets technology. Buy and sell with confidence using verified
-                identities and smart contracts.
+                A trusted marketplace where real people buy and sell second-hand items safely. We verify every user and
+                protect every transaction, making it easy to trade with confidence.
               </p>
               <div className="flex space-x-4">
-                <Link
-                  href="https://github.com/trust-bazaar"
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  <Github className="h-6 w-6" />
-                </Link>
                 <Link
                   href="https://twitter.com/trustbazaar"
                   className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -227,64 +218,26 @@ export default function HomePage() {
                   <Twitter className="h-6 w-6" />
                 </Link>
                 <Link
-                  href="https://discord.gg/trustbazaar"
+                  href="https://instagram.com/trustbazaar"
                   className="text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  <MessageCircle className="h-6 w-6" />
+                  <Instagram className="h-6 w-6" />
+                </Link>
+                <Link
+                  href="https://linkedin.com/company/trustbazaar"
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <Linkedin className="h-6 w-6" />
                 </Link>
               </div>
             </div>
 
             <div>
-              <h3 className="font-bold text-slate-800 mb-4">Resources</h3>
+              <h3 className="font-bold text-slate-800 mb-4">Company</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link
-                    href="/docs"
-                    className="text-slate-600 hover:text-slate-800 transition-colors flex items-center"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/whitepaper" className="text-slate-600 hover:text-slate-800 transition-colors">
-                    Whitepaper
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/api" className="text-slate-600 hover:text-slate-800 transition-colors">
-                    API Reference
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/support" className="text-slate-600 hover:text-slate-800 transition-colors">
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-slate-800 mb-4">Community</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="https://github.com/trust-bazaar"
-                    className="text-slate-600 hover:text-slate-800 transition-colors flex items-center"
-                  >
-                    <Github className="h-4 w-4 mr-2" />
-                    GitHub
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-slate-600 hover:text-slate-800 transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/roadmap" className="text-slate-600 hover:text-slate-800 transition-colors">
-                    Roadmap
+                  <Link href="/about" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    About Us
                   </Link>
                 </li>
                 <li>
@@ -292,12 +245,48 @@ export default function HomePage() {
                     Careers
                   </Link>
                 </li>
+                <li>
+                  <Link href="/press" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Press
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-slate-800 mb-4">Support</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/help" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/safety" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Safety
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-slate-600 hover:text-slate-800 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-slate-200 mt-8 pt-8 text-center">
-            <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved. Built on Ethereum.</p>
+            <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved.</p>
           </div>
         </div>
       </footer>
