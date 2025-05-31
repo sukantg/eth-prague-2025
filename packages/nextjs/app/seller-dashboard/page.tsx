@@ -36,8 +36,8 @@ const mockListings: Listing[] = [
   {
     id: 1,
     title: "Vintage Leather Jacket",
-    price: "0.5 FLOW",
-    image: "/placeholder.svg?height=200&width=200",
+    price: "120 USDC",
+    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=500&fit=crop",
     status: "Active",
     views: 24,
     likes: 8,
@@ -46,8 +46,8 @@ const mockListings: Listing[] = [
   {
     id: 2,
     title: "MacBook Pro 2019",
-    price: "15.2 FLOW",
-    image: "/placeholder.svg?height=200&width=200",
+    price: "850 USDC",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
     status: "Sold",
     views: 156,
     likes: 32,
@@ -56,8 +56,8 @@ const mockListings: Listing[] = [
   {
     id: 3,
     title: "Vintage Camera",
-    price: "2.1 FLOW",
-    image: "/placeholder.svg?height=200&width=200",
+    price: "180 USDC",
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=500&fit=crop",
     status: "Active",
     views: 89,
     likes: 15,
@@ -125,7 +125,7 @@ export default function SellerDashboard() {
     const product: Listing = {
       id: listings.length + 1,
       title: newProduct.title,
-      price: `${newProduct.price} FLOW`,
+      price: `${newProduct.price} USDC`,
       image: imagePreviews[0] || "/placeholder.svg?height=200&width=200",
       status: "Active" as const,
       views: 0,
@@ -378,15 +378,15 @@ export default function SellerDashboard() {
 
                         <div className="space-y-3">
                           <Label htmlFor="price" className="text-base font-semibold text-slate-800">
-                            Price (FLOW) *
+                            Price (USDC) *
                           </Label>
                           <Input
                             id="price"
                             type="number"
-                            step="0.1"
+                            step="0.01"
                             value={newProduct.price}
                             onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
-                            placeholder="0.0"
+                            placeholder="Enter price in USDC"
                             required
                             className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
                           />

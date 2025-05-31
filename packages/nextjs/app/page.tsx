@@ -59,7 +59,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed">
-              Powered by World ID, NFTs, and smart contract escrow on Flow EVM.
+              Powered by World ID, NFTs, and smart contract escrow on Ethereum.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/seller-dashboard">
@@ -299,7 +299,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-slate-200 mt-8 pt-8 text-center">
-            <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved. Built on Flow EVM.</p>
+            <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved. Built on Ethereum.</p>
           </div>
         </div>
       </footer>
