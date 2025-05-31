@@ -34,6 +34,7 @@ interface Listing {
   views: number;
   likes: number;
   description: string;
+  location: string;
 }
 
 interface NewProduct {
@@ -42,6 +43,7 @@ interface NewProduct {
   price: string;
   category: string;
   condition: string;
+  location: string;
 }
 
 // Mock data for listings
@@ -55,6 +57,7 @@ const mockListings: Listing[] = [
     views: 24,
     likes: 8,
     description: "Genuine leather jacket from the 90s in excellent condition.",
+    location: "Prague, Czech Republic",
   },
   {
     id: 2,
@@ -65,6 +68,7 @@ const mockListings: Listing[] = [
     views: 156,
     likes: 32,
     description: "13-inch MacBook Pro with Touch Bar, 512GB SSD.",
+    location: "Berlin, Germany",
   },
   {
     id: 3,
@@ -75,6 +79,7 @@ const mockListings: Listing[] = [
     views: 89,
     likes: 15,
     description: "Canon AE-1 film camera with 50mm lens.",
+    location: "Vienna, Austria",
   },
 ];
 
@@ -88,6 +93,7 @@ export default function SellerDashboard() {
     price: "",
     category: "",
     condition: "",
+    location: "",
   });
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -104,6 +110,7 @@ export default function SellerDashboard() {
     title: "",
     description: "",
     price: "",
+    location: "",
   });
 
   const handleWorldIDVerification = async () => {
@@ -158,10 +165,11 @@ export default function SellerDashboard() {
       views: 0,
       likes: 0,
       description: newProduct.description,
+      location: newProduct.location,
     };
     setListings([product, ...listings]);
     setNewListingId(newId);
-    setNewProduct({ title: "", description: "", price: "", category: "", condition: "" });
+    setNewProduct({ title: "", description: "", price: "", category: "", condition: "", location: "" });
     setUploadedImages([]);
     setImagePreviews([]);
 
@@ -203,6 +211,7 @@ export default function SellerDashboard() {
       title: listing.title,
       description: listing.description,
       price: listing.price.replace(" USDC", ""),
+      location: listing.location,
     });
     setShowEditModal(true);
   };
@@ -217,6 +226,7 @@ export default function SellerDashboard() {
             title: editForm.title,
             description: editForm.description,
             price: `${editForm.price} USDC`,
+            location: editForm.location,
           };
         }
         return listing;
@@ -325,8 +335,8 @@ export default function SellerDashboard() {
               <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <CheckCircle className="h-10 w-10 text-emerald-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Product Listed!</h3>
-              <p className="text-slate-600">Your item has been successfully added to the marketplace</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">Product Listed!</h3>
+              <p className="text-lg text-slate-700">Your item has been successfully added to the marketplace</p>
             </div>
           </div>
         </div>
@@ -341,8 +351,8 @@ export default function SellerDashboard() {
               <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <AlertTriangle className="h-10 w-10 text-amber-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Delete Listing?</h3>
-              <p className="text-slate-600 mb-6 text-center">
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">Delete Listing?</h3>
+              <p className="text-lg text-slate-700 mb-6 text-center">
                 Are you sure you want to delete this listing? This action cannot be undone.
               </p>
               <div className="flex space-x-4">
@@ -369,7 +379,7 @@ export default function SellerDashboard() {
           <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-2xl">
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-slate-800">Edit Listing</h3>
+                <h3 className="text-2xl font-bold text-slate-900">Edit Listing</h3>
                 <Button variant="ghost" size="sm" onClick={() => setShowEditModal(false)} className="h-8 w-8 p-0">
                   <X className="h-4 w-4" />
                 </Button>
@@ -378,8 +388,8 @@ export default function SellerDashboard() {
               <form onSubmit={handleEditSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="edit-title" className="text-base font-semibold text-slate-800">
-                      Product Title *
+                    <Label htmlFor="edit-title" className="text-lg font-semibold text-slate-900">
+                      Product Name *
                     </Label>
                     <Input
                       id="edit-title"
@@ -387,12 +397,12 @@ export default function SellerDashboard() {
                       onChange={e => setEditForm({ ...editForm, title: e.target.value })}
                       placeholder="Enter a descriptive title"
                       required
-                      className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="edit-price" className="text-base font-semibold text-slate-800">
+                    <Label htmlFor="edit-price" className="text-lg font-semibold text-slate-900">
                       Price (USDC) *
                     </Label>
                     <Input
@@ -403,12 +413,12 @@ export default function SellerDashboard() {
                       onChange={e => setEditForm({ ...editForm, price: e.target.value })}
                       placeholder="Enter price in USDC"
                       required
-                      className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="edit-description" className="text-base font-semibold text-slate-800">
+                    <Label htmlFor="edit-description" className="text-lg font-semibold text-slate-900">
                       Description *
                     </Label>
                     <Textarea
@@ -419,6 +429,20 @@ export default function SellerDashboard() {
                       rows={4}
                       required
                       className="border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-location" className="text-lg font-semibold text-slate-900">
+                      Location *
+                    </Label>
+                    <Input
+                      id="edit-location"
+                      value={editForm.location}
+                      onChange={e => setEditForm({ ...editForm, location: e.target.value })}
+                      placeholder="e.g., Prague, Czech Republic"
+                      required
+                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
                     />
                   </div>
                 </div>
@@ -468,31 +492,31 @@ export default function SellerDashboard() {
         </div>
       </header>
 
-      {/* Merit Points Header */}
+      {/* Trust Points Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Seller Dashboard</h1>
-              <p className="text-slate-600">Manage your listings and track your performance</p>
+              <h1 className="text-3xl font-bold text-slate-900">Seller Dashboard</h1>
+              <p className="text-lg text-slate-700">Manage your listings and track your performance</p>
             </div>
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-8">
               <div className="text-center">
                 <div className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-amber-500" />
-                  <span className="text-2xl font-bold text-slate-800">1,247</span>
+                  <Star className="h-6 w-6 text-amber-500" />
+                  <span className="text-3xl font-bold text-slate-900">1,247</span>
                 </div>
-                <p className="text-sm text-slate-600">Merit Points</p>
+                <p className="text-base font-medium text-slate-700">Trust Points</p>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-800">{listings.length}</div>
-                <p className="text-sm text-slate-600">Active Listings</p>
+                <div className="text-3xl font-bold text-slate-900">{listings.length}</div>
+                <p className="text-base font-medium text-slate-700">Active Listings</p>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-800">
+                <div className="text-3xl font-bold text-slate-900">
                   {listings.filter(l => l.status === "Sold").length}
                 </div>
-                <p className="text-sm text-slate-600">Items Sold</p>
+                <p className="text-base font-medium text-slate-700">Items Sold</p>
               </div>
             </div>
           </div>
@@ -584,8 +608,8 @@ export default function SellerDashboard() {
                       {/* Left Column */}
                       <div className="space-y-6">
                         <div className="space-y-3">
-                          <Label htmlFor="title" className="text-base font-semibold text-slate-800">
-                            Product Title *
+                          <Label htmlFor="title" className="text-lg font-semibold text-slate-900">
+                            Product Name *
                           </Label>
                           <Input
                             id="title"
@@ -593,12 +617,12 @@ export default function SellerDashboard() {
                             onChange={e => setNewProduct({ ...newProduct, title: e.target.value })}
                             placeholder="Enter a descriptive title"
                             required
-                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                            className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
                           />
                         </div>
 
                         <div className="space-y-3">
-                          <Label htmlFor="price" className="text-base font-semibold text-slate-800">
+                          <Label htmlFor="price" className="text-lg font-semibold text-slate-900">
                             Price (USDC) *
                           </Label>
                           <Input
@@ -609,12 +633,12 @@ export default function SellerDashboard() {
                             onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
                             placeholder="Enter price in USDC"
                             required
-                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                            className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
                           />
                         </div>
 
                         <div className="space-y-3">
-                          <Label htmlFor="category" className="text-base font-semibold text-slate-800">
+                          <Label htmlFor="category" className="text-lg font-semibold text-slate-900">
                             Category *
                           </Label>
                           <Input
@@ -623,7 +647,21 @@ export default function SellerDashboard() {
                             onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
                             placeholder="e.g., Electronics, Fashion, Books"
                             required
-                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                            className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label htmlFor="location" className="text-lg font-semibold text-slate-900">
+                            Location *
+                          </Label>
+                          <Input
+                            id="location"
+                            value={newProduct.location}
+                            onChange={e => setNewProduct({ ...newProduct, location: e.target.value })}
+                            placeholder="e.g., Prague, Czech Republic"
+                            required
+                            className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
                           />
                         </div>
                       </div>
@@ -631,7 +669,7 @@ export default function SellerDashboard() {
                       {/* Right Column */}
                       <div className="space-y-6">
                         <div className="space-y-3">
-                          <Label htmlFor="condition" className="text-base font-semibold text-slate-800">
+                          <Label htmlFor="condition" className="text-lg font-semibold text-slate-900">
                             Condition *
                           </Label>
                           <Input
@@ -640,12 +678,12 @@ export default function SellerDashboard() {
                             onChange={e => setNewProduct({ ...newProduct, condition: e.target.value })}
                             placeholder="e.g., Like New, Good, Fair"
                             required
-                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
+                            className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400"
                           />
                         </div>
 
                         <div className="space-y-3">
-                          <Label htmlFor="description" className="text-base font-semibold text-slate-800">
+                          <Label htmlFor="description" className="text-lg font-semibold text-slate-900">
                             Description *
                           </Label>
                           <Textarea
@@ -713,33 +751,43 @@ export default function SellerDashboard() {
                       </Badge>
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-bold text-slate-800 mb-2">{listing.title}</h3>
-                      <p className="text-slate-600 text-sm mb-3 line-clamp-2">{listing.description}</p>
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">{listing.title}</h3>
+                      <p className="text-base text-slate-700 mb-2 line-clamp-2">{listing.description}</p>
+                      <div className="flex items-center text-base text-slate-700 mb-3">
+                        <Globe className="h-5 w-5 mr-2" />
+                        <span className="font-medium">{listing.location}</span>
+                      </div>
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-lg font-bold text-slate-800">{listing.price}</span>
-                        <div className="flex items-center space-x-3 text-sm text-slate-500">
-                          <div className="flex items-center space-x-1">
-                            <Eye className="h-4 w-4" />
-                            <span>{listing.views}</span>
+                        <span className="text-2xl font-bold text-slate-900">{listing.price}</span>
+                        <div className="flex items-center space-x-4 text-base text-slate-700">
+                          <div className="flex items-center space-x-2">
+                            <Eye className="h-5 w-5" />
+                            <span className="font-medium">{listing.views}</span>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4" />
-                            <span>{listing.likes}</span>
+                          <div className="flex items-center space-x-2">
+                            <Star className="h-5 w-5" />
+                            <span className="font-medium">{listing.likes}</span>
                           </div>
                         </div>
                       </div>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" onClick={() => handleEditClick(listing)} className="flex-1">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditClick(listing)}
+                          className="flex-1 font-semibold text-slate-800 hover:text-slate-900 hover:bg-slate-50 border-slate-200"
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Listing
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteClick(listing.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
                         </Button>
                       </div>
                     </CardContent>
