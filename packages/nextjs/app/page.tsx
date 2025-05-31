@@ -58,9 +58,7 @@ export default function HomePage() {
                 with verified humans
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed">
-              Powered by World ID, NFTs, and smart contract escrow on Ethereum.
-            </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/seller-dashboard">
                 <Button
@@ -100,9 +98,9 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Shield className="h-8 w-8 text-slate-700" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-4">Smart Contract Escrow</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Smart Escrow</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Funds are held securely in smart contracts until both parties confirm the transaction is complete.
+                  Funds are held securely in until both parties confirm the transaction is complete.
                 </p>
               </CardContent>
             </Card>
@@ -124,7 +122,7 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Zap className="h-8 w-8 text-amber-700" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-4">NFT Ownership Proof</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Ownership Proof</h3>
                 <p className="text-slate-600 leading-relaxed">
                   Items are tokenized as NFTs, providing immutable proof of ownership and transaction history.
                 </p>
@@ -166,7 +164,7 @@ export default function HomePage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-2">List or Browse Items</h3>
                     <p className="text-slate-600">
-                      Sellers create NFTs for their items, buyers browse verified listings from real people.
+                      Sellers list their items, buyers browse verified listings from real people.
                     </p>
                   </div>
                 </div>
@@ -178,7 +176,7 @@ export default function HomePage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-2">Secure Transaction</h3>
                     <p className="text-slate-600">
-                      Smart contracts hold funds in escrow until both parties confirm successful delivery.
+                      Smart escrows holds the funds until both parties confirm successful delivery.
                     </p>
                   </div>
                 </div>
