@@ -264,7 +264,7 @@ export default function ProductPage() {
                           <Button
                             onClick={handleConnectWallet}
                             disabled={isProcessing}
-                            className="bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
+                            className="w-full bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
                           >
                             {isProcessing ? (
                               <>
