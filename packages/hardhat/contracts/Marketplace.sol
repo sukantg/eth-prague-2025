@@ -8,6 +8,16 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Marketplace is ReentrancyGuard, Pausable, Ownable {
+    enum ListingStatus { Open, Accepted, Cancelled }
+
+    struct Item {
+        uint256 itemId;
+        string name;
+        string metadata;
+        address tokenAddress;
+        uint256 tokenId;
+    }
+
     struct Listing {
         address seller;
         uint256 price;
@@ -16,6 +26,8 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         string metadata;
         bool isActive;
         uint256 timestamp;
+        ListingStatus status;
+        bytes32 itemHash;
     }
 
     struct Bid {
@@ -46,9 +58,10 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
     mapping(uint256 => Bid[]) public bids;
     mapping(uint256 => uint256) public highestBid;
     mapping(address => bool) public supportedTokens;
+    mapping(bytes32 => bool) public itemListed; // Track if item is already listed
     mapping(uint256 => EscrowItem) public escrows;
 
-    event ItemListed(address indexed seller, uint256 indexed tokenId, uint256 price);
+    event ItemListed(address indexed seller, uint256 indexed tokenId, uint256 price, bytes32 itemHash);
     event ItemBought(address indexed buyer, uint256 indexed tokenId, uint256 price);
     event BidPlaced(address indexed bidder, uint256 indexed tokenId, uint256 amount);
     event BidCancelled(address indexed bidder, uint256 indexed tokenId);
@@ -70,7 +83,9 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         _;
     }
 
-    constructor(address _usdc, address _escrow, address _feeCollector) {
+    constructor(address _usdc, address _escrow, address _feeCollector) 
+        Ownable(msg.sender)  // Pass msg.sender as initialOwner
+    {
         require(_usdc != address(0), "Invalid USDC address");
         require(_escrow != address(0), "Invalid escrow address");
         require(_feeCollector != address(0), "Invalid fee collector");
@@ -106,6 +121,10 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         _unpause();
     }
 
+    function generateItemHash(address tokenAddress, uint256 tokenId) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(tokenAddress, tokenId));
+    }
+
     function listItem(address tokenAddress, uint256 tokenId, uint256 price, string calldata metadata) 
         external 
         nonReentrant 
@@ -119,6 +138,9 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         require(IERC721(tokenAddress).isApprovedForAll(msg.sender, address(this)) || 
                 IERC721(tokenAddress).getApproved(tokenId) == address(this), "Not approved");
 
+        bytes32 itemHash = generateItemHash(tokenAddress, tokenId);
+        require(!itemListed[itemHash], "Item already listed elsewhere");
+
         IERC721(tokenAddress).transferFrom(msg.sender, address(this), tokenId);
 
         listings[tokenId] = Listing({
@@ -128,15 +150,19 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
             tokenId: tokenId,
             metadata: metadata,
             isActive: true,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            status: ListingStatus.Open,
+            itemHash: itemHash
         });
 
-        emit ItemListed(msg.sender, tokenId, price);
+        itemListed[itemHash] = true;
+        emit ItemListed(msg.sender, tokenId, price, itemHash);
     }
 
     function buyItem(uint256 tokenId) external nonReentrant whenNotPaused {
         Listing memory item = listings[tokenId];
         require(item.isActive, "Item not listed");
+        require(item.status == ListingStatus.Open, "Item not available for purchase");
         require(block.timestamp <= item.timestamp + LISTING_TIMEOUT, "Listing expired");
         require(IERC20(usdc).allowance(msg.sender, address(this)) >= item.price, "Insufficient allowance");
 
@@ -155,8 +181,7 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
             amount: sellerAmount
         });
 
-        emit EscrowCreated(tokenId, item.seller, msg.sender, sellerAmount);
-
+        itemListed[item.itemHash] = false;
         delete listings[tokenId];
         emit ItemBought(msg.sender, tokenId, item.price);
     }
@@ -175,6 +200,7 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
     function placeBid(uint256 tokenId, uint256 amount) external nonReentrant whenNotPaused {
         Listing memory item = listings[tokenId];
         require(item.isActive, "Item not listed");
+        require(item.status == ListingStatus.Open, "Item not available for bidding");
         require(block.timestamp <= item.timestamp + LISTING_TIMEOUT, "Listing expired");
         require(amount >= MIN_BID, "Bid too low");
         require(amount > highestBid[tokenId], "Bid too low");
@@ -229,6 +255,7 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
     function acceptBid(uint256 tokenId, uint256 bidIndex) external nonReentrant whenNotPaused {
         Listing memory item = listings[tokenId];
         require(item.isActive, "Item not listed");
+        require(item.status == ListingStatus.Open, "Item not available for bidding");
         require(item.seller == msg.sender, "Not seller");
         require(bidIndex < bids[tokenId].length, "Invalid bid index");
         require(block.timestamp <= item.timestamp + LISTING_TIMEOUT, "Listing expired");
@@ -250,6 +277,7 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
             }
         }
 
+        itemListed[item.itemHash] = false;
         delete listings[tokenId];
         delete bids[tokenId];
         delete highestBid[tokenId];
@@ -261,9 +289,10 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         Listing memory item = listings[tokenId];
         require(item.isActive, "Item not listed");
         require(item.seller == msg.sender, "Not seller");
+        require(item.status == ListingStatus.Open, "Cannot cancel an accepted listing");
 
         // Return NFT to seller
-        IERC721(item.tokenAddress).transferFrom(address(this), item.seller, tokenId);
+        IERC721(item.tokenAddress).transferFrom(address(this), item.seller, item.tokenId);
 
         // Return all active bids
         for (uint i = 0; i < bids[tokenId].length; i++) {
@@ -272,6 +301,7 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
             }
         }
 
+        itemListed[item.itemHash] = false;
         delete listings[tokenId];
         delete bids[tokenId];
         delete highestBid[tokenId];
