@@ -1,17 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Instagram, Linkedin, Shield, Twitter, Users, Zap } from "lucide-react";
-import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent } from "~~/components/ui/card";
-
-// Dynamically import the connect button with no SSR
-const ConnectButton = dynamic(() => Promise.resolve(RainbowKitCustomConnectButton), {
-  ssr: false,
-});
 
 export default function HomePage() {
   const [currentYear, setCurrentYear] = useState("2024");
@@ -39,7 +32,6 @@ export default function HomePage() {
               <Link href="#features" className="text-slate-600 hover:text-slate-800 transition-colors">
                 Features
               </Link>
-              <ConnectButton />
             </nav>
           </div>
         </div>
