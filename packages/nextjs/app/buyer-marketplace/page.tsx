@@ -59,7 +59,7 @@ const mockMarketplaceItems = [
   {
     id: 4,
     title: "Designer Handbag",
-    price: "450 USDC",
+    price: "400 USDC",
     image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&h=500&fit=crop",
     seller: "Diana.eth",
     condition: "Like New",
