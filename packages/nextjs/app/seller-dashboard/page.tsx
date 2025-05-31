@@ -17,10 +17,12 @@ import {
   Edit,
   Eye,
   Globe,
+  Mail,
   Plus,
   Shield,
   Star,
   Trash2,
+  User,
   X,
 } from "lucide-react";
 import { Textarea } from "~~/components/ui/textarea";
@@ -44,6 +46,13 @@ interface NewProduct {
   category: string;
   condition: string;
   location: string;
+}
+
+// Add Profile interface
+interface Profile {
+  username: string;
+  email: string;
+  address?: string;
 }
 
 // Mock data for listings
@@ -111,6 +120,15 @@ export default function SellerDashboard() {
     description: "",
     price: "",
     location: "",
+  });
+  const [profile, setProfile] = useState<Profile>({
+    username: "John Doe",
+    email: "john@example.com",
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editProfileForm, setEditProfileForm] = useState<Profile>({
+    username: "",
+    email: "",
   });
 
   const handleWorldIDVerification = async () => {
@@ -235,6 +253,17 @@ export default function SellerDashboard() {
       setShowEditModal(false);
       setEditingListing(null);
     }
+  };
+
+  const handleEditProfile = () => {
+    setEditProfileForm(profile);
+    setIsEditingProfile(true);
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfile(editProfileForm);
+    setIsEditingProfile(false);
   };
 
   // Cleanup timeouts on unmount
@@ -466,6 +495,70 @@ export default function SellerDashboard() {
         </div>
       )}
 
+      {/* Profile Edit Modal */}
+      {isEditingProfile && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsEditingProfile(false)} />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-2xl">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-slate-900">Edit Profile</h3>
+                <Button variant="ghost" size="sm" onClick={() => setIsEditingProfile(false)} className="h-8 w-8 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="username" className="text-lg font-semibold text-slate-900">
+                      Username *
+                    </Label>
+                    <Input
+                      id="username"
+                      value={editProfileForm.username}
+                      onChange={e => setEditProfileForm({ ...editProfileForm, username: e.target.value })}
+                      placeholder="Enter your username"
+                      required
+                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email" className="text-lg font-semibold text-slate-900">
+                      Email *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={editProfileForm.email}
+                      onChange={e => setEditProfileForm({ ...editProfileForm, email: e.target.value })}
+                      placeholder="Enter your email"
+                      required
+                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditingProfile(false)}
+                    className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white">
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-slate-200/50 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
@@ -526,9 +619,10 @@ export default function SellerDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="add-product" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-2xl">
             <TabsTrigger value="add-product">Add Product</TabsTrigger>
             <TabsTrigger value="my-listings">My Listings</TabsTrigger>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
 
           {/* Add Product Tab */}
@@ -815,6 +909,64 @@ export default function SellerDashboard() {
                   </Button>
                 </div>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile">
+            <div className="max-w-4xl mx-auto">
+              <Card className="shadow-xl rounded-3xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-3 text-2xl">
+                      <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-600 rounded-xl flex items-center justify-center">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <span>Profile Information</span>
+                    </CardTitle>
+                    <Button
+                      variant="outline"
+                      onClick={handleEditProfile}
+                      className="font-semibold text-slate-800 hover:text-slate-900 hover:bg-slate-50 border-slate-200"
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <Label className="text-base font-semibold text-slate-800">Username</Label>
+                        <div className="flex items-center space-x-2">
+                          <User className="h-5 w-5 text-slate-500" />
+                          <p className="text-lg text-slate-900">{profile.username}</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="text-base font-semibold text-slate-800">Email</Label>
+                        <div className="flex items-center space-x-2">
+                          <Mail className="h-5 w-5 text-slate-500" />
+                          <p className="text-lg text-slate-900">{profile.email}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="bg-slate-50 rounded-2xl p-6">
+                        <h4 className="text-lg font-semibold text-slate-900 mb-4">Account Status</h4>
+                        <div className="flex items-center space-x-2 text-emerald-600">
+                          <CheckCircle className="h-5 w-5" />
+                          <span className="font-medium">Verified Seller</span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2">Your account has been verified with World ID</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
