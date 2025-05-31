@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Camera, CheckCircle, Edit, Eye, Globe, Plus, Shield, Star, Trash2, X } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Camera,
+  CheckCircle,
+  Edit,
+  Eye,
+  Globe,
+  Plus,
+  Shield,
+  Star,
+  Trash2,
+  X,
+} from "lucide-react";
 import { Textarea } from "~~/components/ui/textarea";
 
 interface Listing {
@@ -79,6 +92,19 @@ export default function SellerDashboard() {
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newListingId, setNewListingId] = useState<number | null>(null);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const deleteTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    price: "",
+  });
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true);
@@ -122,8 +148,9 @@ export default function SellerDashboard() {
 
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
+    const newId = listings.length + 1;
     const product: Listing = {
-      id: listings.length + 1,
+      id: newId,
       title: newProduct.title,
       price: `${newProduct.price} USDC`,
       image: imagePreviews[0] || "/placeholder.svg?height=200&width=200",
@@ -133,14 +160,84 @@ export default function SellerDashboard() {
       description: newProduct.description,
     };
     setListings([product, ...listings]);
+    setNewListingId(newId);
     setNewProduct({ title: "", description: "", price: "", category: "", condition: "" });
     setUploadedImages([]);
     setImagePreviews([]);
+
+    // Show success animation
+    setShowSuccessAnimation(true);
+    if (animationTimeoutRef.current) {
+      clearTimeout(animationTimeoutRef.current);
+    }
+    animationTimeoutRef.current = setTimeout(() => {
+      setShowSuccessAnimation(false);
+      setNewListingId(null);
+    }, 2000);
   };
 
-  const handleDeleteListing = (id: number) => {
-    setListings(listings.filter(listing => listing.id !== id));
+  const handleDeleteClick = (id: number) => {
+    setItemToDelete(id);
+    setShowDeleteConfirmation(true);
+    if (deleteTimeoutRef.current) {
+      clearTimeout(deleteTimeoutRef.current);
+    }
   };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setListings(listings.filter(listing => listing.id !== itemToDelete));
+      setShowDeleteConfirmation(false);
+      setItemToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setItemToDelete(null);
+  };
+
+  const handleEditClick = (listing: Listing) => {
+    setEditingListing(listing);
+    setEditForm({
+      title: listing.title,
+      description: listing.description,
+      price: listing.price.replace(" USDC", ""),
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingListing) {
+      const updatedListings = listings.map(listing => {
+        if (listing.id === editingListing.id) {
+          return {
+            ...listing,
+            title: editForm.title,
+            description: editForm.description,
+            price: `${editForm.price} USDC`,
+          };
+        }
+        return listing;
+      });
+      setListings(updatedListings);
+      setShowEditModal(false);
+      setEditingListing(null);
+    }
+  };
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+      if (deleteTimeoutRef.current) {
+        clearTimeout(deleteTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!isVerified) {
     return (
@@ -220,6 +317,131 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-emerald-50">
+      {/* Success Animation Overlay */}
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl animate-scale-up">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                <CheckCircle className="h-10 w-10 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">Product Listed!</h3>
+              <p className="text-slate-600">Your item has been successfully added to the marketplace</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Overlay */}
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={handleCancelDelete} />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                <AlertTriangle className="h-10 w-10 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">Delete Listing?</h3>
+              <p className="text-slate-600 mb-6 text-center">
+                Are you sure you want to delete this listing? This action cannot be undone.
+              </p>
+              <div className="flex space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={handleCancelDelete}
+                  className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleConfirmDelete} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white">
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowEditModal(false)} />
+          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-2xl">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-slate-800">Edit Listing</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowEditModal(false)} className="h-8 w-8 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <form onSubmit={handleEditSubmit} className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-title" className="text-base font-semibold text-slate-800">
+                      Product Title *
+                    </Label>
+                    <Input
+                      id="edit-title"
+                      value={editForm.title}
+                      onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                      placeholder="Enter a descriptive title"
+                      required
+                      className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-price" className="text-base font-semibold text-slate-800">
+                      Price (USDC) *
+                    </Label>
+                    <Input
+                      id="edit-price"
+                      type="number"
+                      step="0.01"
+                      value={editForm.price}
+                      onChange={e => setEditForm({ ...editForm, price: e.target.value })}
+                      placeholder="Enter price in USDC"
+                      required
+                      className="h-12 border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-description" className="text-base font-semibold text-slate-800">
+                      Description *
+                    </Label>
+                    <Textarea
+                      id="edit-description"
+                      value={editForm.description}
+                      onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                      placeholder="Describe your product in detail"
+                      rows={4}
+                      required
+                      className="border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1 resize-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowEditModal(false)}
+                    className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white">
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-slate-200/50 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
@@ -296,7 +518,6 @@ export default function SellerDashboard() {
                     </div>
                     <span>Add New Product</span>
                   </CardTitle>
-                  <p className="text-slate-600 mt-2">Create an NFT listing for your item on the marketplace</p>
                 </CardHeader>
                 <CardContent className="space-y-8">
                   <form onSubmit={handleAddProduct} className="space-y-8">
@@ -447,7 +668,7 @@ export default function SellerDashboard() {
                         className="w-full h-14 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         <Plus className="h-5 w-5 mr-2" />
-                        Create NFT & List Product
+                        List your Product
                       </Button>
                       <p className="text-sm text-slate-500 text-center mt-3">
                         Your item will be minted as an NFT and listed on the marketplace
@@ -469,7 +690,12 @@ export default function SellerDashboard() {
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {listings.map(listing => (
-                  <Card key={listing.id} className="shadow-lg rounded-2xl border-0 overflow-hidden">
+                  <Card
+                    key={listing.id}
+                    className={`shadow-lg rounded-2xl border-0 overflow-hidden transition-all duration-500 ${
+                      listing.id === newListingId ? "animate-slide-in" : ""
+                    }`}
+                  >
                     <div className="aspect-square bg-slate-100 relative">
                       <img
                         src={listing.image || "/placeholder.svg"}
@@ -503,14 +729,14 @@ export default function SellerDashboard() {
                         </div>
                       </div>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button variant="outline" size="sm" onClick={() => handleEditClick(listing)} className="flex-1">
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteListing(listing.id)}
+                          onClick={() => handleDeleteClick(listing.id)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -547,4 +773,59 @@ export default function SellerDashboard() {
       </div>
     </div>
   );
+}
+
+const styles = `
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+`;
+
+// Add the styles to the document
+if (typeof document !== "undefined") {
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
 }
