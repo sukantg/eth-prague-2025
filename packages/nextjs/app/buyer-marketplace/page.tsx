@@ -792,9 +792,9 @@ function BuyerMarketplaceContent() {
                     type="button"
                     variant="outline"
                     onClick={() => setShowCardPayment(false)}
-                    className="px-6 py-2 border-slate-200 text-slate-800 hover:bg-slate-50"
+                    className="px-6 py-2 border-slate-200 text-slate-800 hover:bg-slate-50 font-medium"
                   >
-                    Cancel
+                    Cancel Payment
                   </Button>
                   <Button type="submit" className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white">
                     Pay Now
