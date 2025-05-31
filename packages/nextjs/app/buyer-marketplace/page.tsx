@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -131,6 +131,14 @@ export default function BuyerMarketplace() {
   const [meritPoints] = useState(450);
 
   const categories = ["All", "Electronics", "Fashion", "Furniture", "Books", "Sports"];
+
+  useEffect(() => {
+    // Check if skipVerification is in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("skipVerification") === "true") {
+      setIsVerified(true);
+    }
+  }, []);
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true);
@@ -371,10 +379,12 @@ export default function BuyerMarketplace() {
                           {item.category}
                         </Badge>
                       </div>
-                      <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white rounded-xl">
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Buy or Bid
-                      </Button>
+                      <Link href={`/product/${item.id}`}>
+                        <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white rounded-xl">
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Buy or Bid
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
