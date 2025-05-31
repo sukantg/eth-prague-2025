@@ -198,6 +198,9 @@ export default function SellerDashboard() {
     email: "",
   });
   const [trustPoints, setTrustPoints] = useState(1550);
+  const [showAcceptBidModal, setShowAcceptBidModal] = useState(false);
+  const [selectedBid, setSelectedBid] = useState<{ listingId: number; bidId: number } | null>(null);
+  const [acceptedBids, setAcceptedBids] = useState<Set<string>>(new Set());
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true);
@@ -335,6 +338,39 @@ export default function SellerDashboard() {
     e.preventDefault();
     setProfile(editProfileForm);
     setIsEditingProfile(false);
+  };
+
+  const handleAcceptBid = (listingId: number, bidId: number) => {
+    setSelectedBid({ listingId, bidId });
+    setShowAcceptBidModal(true);
+  };
+
+  const handleConfirmAcceptBid = () => {
+    if (selectedBid) {
+      const { listingId, bidId } = selectedBid;
+      setListings(prevListings =>
+        prevListings.map(listing => {
+          if (listing.id === listingId) {
+            return {
+              ...listing,
+              bids: listing.bids?.map(bid => {
+                if (bid.id === bidId) {
+                  return { ...bid, status: "accepted" as const };
+                }
+                return { ...bid, status: "rejected" as const };
+              }),
+            };
+          }
+          return listing;
+        }),
+      );
+      // Add the accepted bid to our tracking set
+      setAcceptedBids(prev => new Set([...prev, `${listingId}-${bidId}`]));
+      // Increase trust points by 100
+      setTrustPoints(prev => prev + 100);
+      setShowAcceptBidModal(false);
+      setSelectedBid(null);
+    }
   };
 
   // Cleanup timeouts on unmount
@@ -626,6 +662,53 @@ export default function SellerDashboard() {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Accept Bid Modal */}
+      {showAcceptBidModal && selectedBid && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowAcceptBidModal(false)} />
+          <div className="bg-white rounded-3xl p-10 shadow-2xl animate-scale-up relative w-full max-w-md">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl flex items-center justify-center mb-8 shadow-lg">
+                <CheckCircle className="h-12 w-12 text-emerald-600" />
+              </div>
+
+              <div className="space-y-6 w-full">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">Accept Bid?</h3>
+                  <p className="text-lg text-slate-700">
+                    Are you sure you want to accept this bid? This will reject all other pending bids for this item.
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 rounded-2xl p-6 border border-emerald-100">
+                  <div className="flex items-center justify-center space-x-3 mb-2">
+                    <Star className="h-6 w-6 text-amber-500" />
+                    <span className="text-xl font-bold text-emerald-700">+100 Trust Points</span>
+                  </div>
+                  <p className="text-emerald-700 font-medium">Youll earn trust points for accepting this bid!</p>
+                </div>
+
+                <div className="flex space-x-4 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAcceptBidModal(false)}
+                    className="flex-1 h-12 text-base font-semibold border-slate-200 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleConfirmAcceptBid}
+                    className="flex-1 h-12 text-base font-semibold bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    Accept Bid
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1003,7 +1086,7 @@ export default function SellerDashboard() {
                     <Card key={listing.id} className="shadow-lg rounded-2xl border-0 overflow-hidden">
                       <div className="flex flex-col md:flex-row">
                         {/* Product Image Section */}
-                        <div className="md:w-1/3 relative">
+                        <div className="md:w-1/6 relative">
                           <div className="aspect-square bg-slate-100">
                             <img
                               src={listing.image || "/placeholder.svg"}
@@ -1011,15 +1094,15 @@ export default function SellerDashboard() {
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="absolute top-4 left-4">
-                            <Badge className="bg-white/90 backdrop-blur-sm text-slate-800 shadow-sm">
+                          <div className="absolute top-2 left-2">
+                            <Badge className="bg-white/90 backdrop-blur-sm text-slate-800 shadow-sm text-xs">
                               {listing.bids?.filter(bid => bid.status === "pending").length} Pending Bids
                             </Badge>
                           </div>
                         </div>
 
                         {/* Content Section */}
-                        <div className="md:w-2/3 p-6">
+                        <div className="md:w-5/6 p-6">
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-xl font-bold text-slate-800 mb-2">{listing.title}</h3>
@@ -1035,37 +1118,52 @@ export default function SellerDashboard() {
                               </div>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                               {listing.bids
                                 ?.filter(bid => bid.status === "pending")
                                 .sort((a, b) => {
-                                  // Extract numeric values from bid amounts
                                   const amountA = parseFloat(a.amount.replace(" USDC", ""));
                                   const amountB = parseFloat(b.amount.replace(" USDC", ""));
-                                  return amountB - amountA; // Sort in descending order
+                                  return amountB - amountA;
                                 })
-                                .slice(0, 1) // Show only highest bid
+                                .slice(0, 1)
                                 .map(bid => (
                                   <div
                                     key={bid.id}
-                                    className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
+                                    className="flex items-center justify-between p-6 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
                                   >
-                                    <div className="flex items-center space-x-3">
-                                      <div className="w-10 h-10 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center shadow-sm">
-                                        <User className="h-5 w-5 text-slate-700" />
+                                    <div className="flex items-center space-x-4">
+                                      <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center shadow-sm">
+                                        <User className="h-6 w-6 text-slate-700" />
                                       </div>
-                                      <div>
-                                        <p className="font-medium text-slate-800">{bid.bidder}</p>
+                                      <div className="space-y-1">
+                                        <p className="font-semibold text-lg text-slate-800">{bid.bidder}</p>
                                         <div className="flex items-center space-x-2 text-sm text-slate-500">
-                                          <Calendar className="h-3 w-3" />
+                                          <Calendar className="h-4 w-4" />
                                           <span>{bid.timestamp}</span>
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center space-x-4">
-                                      <div className="text-right">
-                                        <p className="text-sm text-slate-500">Highest Bid</p>
-                                        <p className="text-lg font-bold text-slate-800">{bid.amount}</p>
+                                    <div className="flex items-center space-x-6">
+                                      <div className="flex items-center space-x-4">
+                                        <div className="text-right">
+                                          <p className="text-sm font-medium text-slate-500">Highest Bid</p>
+                                          <p className="text-xl font-bold text-slate-800">{bid.amount}</p>
+                                        </div>
+                                        <div className="h-12 w-px bg-slate-200"></div>
+                                        {acceptedBids.has(`${listing.id}-${bid.id}`) ? (
+                                          <div className="h-12 px-6 flex items-center bg-emerald-50 text-emerald-700 font-semibold rounded-xl">
+                                            <CheckCircle className="h-5 w-5 mr-2" />
+                                            Bid accepted
+                                          </div>
+                                        ) : (
+                                          <Button
+                                            onClick={() => handleAcceptBid(listing.id, bid.id)}
+                                            className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                                          >
+                                            Accept Bid
+                                          </Button>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
