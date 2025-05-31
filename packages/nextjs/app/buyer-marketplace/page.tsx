@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle,
-  CreditCard,
   Globe,
   Heart,
   Package,
@@ -152,16 +151,10 @@ function BuyerMarketplaceContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [likedItems, setLikedItems] = useState<number[]>([]);
   const [trustPoints, setTrustPoints] = useState(450);
-  const [showCardPayment, setShowCardPayment] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showOrderConfirmationModal, setShowOrderConfirmationModal] = useState(false);
   const [purchases, setPurchases] = useState(mockPastPurchases);
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    name: "",
-  });
+
   const [buyerInfo, setBuyerInfo] = useState({
     name: "David Wilson",
     email: "david.wilson@example.com",
@@ -200,20 +193,6 @@ function BuyerMarketplaceContent() {
   const handleCancelEdit = () => {
     setEditedInfo(buyerInfo);
     setIsEditing(false);
-  };
-
-  const handleCardPayment = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle card payment submission
-    setShowCardPayment(false);
-    setShowOrderConfirmationModal(true);
-    // Reset form
-    setCardDetails({
-      cardNumber: "",
-      expiryDate: "",
-      cvv: "",
-      name: "",
-    });
   };
 
   const handleConfirmReceived = (purchaseId: number) => {
@@ -704,117 +683,32 @@ function BuyerMarketplaceContent() {
         </Tabs>
       </div>
 
-      {/* Card Payment Modal */}
-      {showCardPayment && (
+      {/* Order Confirmation Modal */}
+      {showOrderConfirmationModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowCardPayment(false)} />
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowOrderConfirmationModal(false)}
+          />
           <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-slate-900">Card Payment</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowCardPayment(false)}
-                  className="h-8 w-8 p-0 text-slate-800"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
               </div>
-
-              <form onSubmit={handleCardPayment} className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="card-name" className="text-lg font-semibold text-slate-900">
-                      Cardholder Name *
-                    </Label>
-                    <Input
-                      id="card-name"
-                      value={cardDetails.name}
-                      onChange={e => setCardDetails({ ...cardDetails, name: e.target.value })}
-                      placeholder="Name on card"
-                      required
-                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="card-number" className="text-lg font-semibold text-slate-900">
-                      Card Number *
-                    </Label>
-                    <Input
-                      id="card-number"
-                      value={cardDetails.cardNumber}
-                      onChange={e => setCardDetails({ ...cardDetails, cardNumber: e.target.value })}
-                      placeholder="1234 5678 9012 3456"
-                      required
-                      maxLength={19}
-                      className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="expiry-date" className="text-lg font-semibold text-slate-900">
-                        Expiry Date *
-                      </Label>
-                      <Input
-                        id="expiry-date"
-                        value={cardDetails.expiryDate}
-                        onChange={e => setCardDetails({ ...cardDetails, expiryDate: e.target.value })}
-                        placeholder="MM/YY"
-                        required
-                        maxLength={5}
-                        className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="cvv" className="text-lg font-semibold text-slate-900">
-                        CVV *
-                      </Label>
-                      <Input
-                        id="cvv"
-                        type="password"
-                        value={cardDetails.cvv}
-                        onChange={e => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                        placeholder="123"
-                        required
-                        maxLength={3}
-                        className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowCardPayment(false)}
-                    className="px-6 py-2 border-slate-200 text-slate-800 hover:bg-slate-50 font-medium"
-                  >
-                    Cancel Payment
-                  </Button>
-                  <Button type="submit" className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white">
-                    Pay Now
-                  </Button>
-                </div>
-              </form>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Order Received!</h3>
+              <p className="text-slate-600 mb-6">
+                Your product will be shipped soon. Thank you for using Trust Bazaar.
+              </p>
+              <Button
+                onClick={() => setShowOrderConfirmationModal(false)}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Close
+              </Button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Update the card payment button to open the modal */}
-      <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setShowCardPayment(true)}>
-        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center">
-          <CreditCard className="h-3 w-3 text-slate-600" />
-        </div>
-        <button onClick={() => setShowCardPayment(true)} className="text-slate-800">
-          Pay with Card
-        </button>
-      </div>
 
       {/* Confirmation Modal */}
       {showConfirmationModal && (
@@ -840,33 +734,6 @@ function BuyerMarketplaceContent() {
               </div>
               <Button
                 onClick={() => setShowConfirmationModal(false)}
-                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Order Confirmation Modal */}
-      {showOrderConfirmationModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            onClick={() => setShowOrderConfirmationModal(false)}
-          />
-          <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-md">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
-                <CheckCircle className="h-8 w-8 text-emerald-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Order Received!</h3>
-              <p className="text-slate-600 mb-6">
-                Your product will be shipped soon. Thank you for using Trust Bazaar.
-              </p>
-              <Button
-                onClick={() => setShowOrderConfirmationModal(false)}
                 className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
               >
                 Close

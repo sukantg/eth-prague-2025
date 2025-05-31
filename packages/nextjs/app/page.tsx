@@ -197,20 +197,21 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">TB</span>
+        <div className="container mx-auto px-4 py-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {/* Brand Section */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">TB</span>
                 </div>
-                <span className="text-xl font-bold text-slate-800">Trust Bazaar</span>
+                <span className="text-2xl font-bold text-slate-800">Trust Bazaar</span>
               </div>
-              <p className="text-slate-600 mb-6 max-w-md">
+              <p className="text-slate-600 text-lg leading-relaxed max-w-xl">
                 A trusted marketplace where real people buy and sell second-hand items safely. We verify every user and
                 protect every transaction, making it easy to trade with confidence.
               </p>
-              <div className="flex space-x-4">
+              <div className="flex space-x-6 mt-8">
                 <Link
                   href="https://twitter.com/trustbazaar"
                   className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -232,52 +233,54 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Company Links */}
             <div>
-              <h3 className="font-bold text-slate-800 mb-4">Company</h3>
-              <ul className="space-y-2">
+              <h3 className="font-semibold text-slate-900 text-lg mb-6">Company</h3>
+              <ul className="space-y-4">
                 <li>
-                  <Link href="/about" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors">
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/careers" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link href="/press" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/press" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Press
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/contact" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Contact
                   </Link>
                 </li>
               </ul>
             </div>
 
+            {/* Support Links */}
             <div>
-              <h3 className="font-bold text-slate-800 mb-4">Support</h3>
-              <ul className="space-y-2">
+              <h3 className="font-semibold text-slate-900 text-lg mb-6">Support</h3>
+              <ul className="space-y-4">
                 <li>
-                  <Link href="/help" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/help" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Help Center
                   </Link>
                 </li>
                 <li>
-                  <Link href="/safety" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/safety" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Safety
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/terms" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="text-slate-600 hover:text-slate-800 transition-colors">
+                  <Link href="/privacy" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Privacy Policy
                   </Link>
                 </li>
@@ -285,7 +288,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="border-t border-slate-200 mt-8 pt-8 text-center">
+          <div className="border-t border-slate-200 mt-12 pt-8 text-center">
             <p className="text-slate-600">© {currentYear} Trust Bazaar. All rights reserved.</p>
           </div>
         </div>
