@@ -130,6 +130,7 @@ export default function SellerDashboard() {
     username: "",
     email: "",
   });
+  const [trustPoints, setTrustPoints] = useState(1550);
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true);
@@ -190,6 +191,9 @@ export default function SellerDashboard() {
     setNewProduct({ title: "", description: "", price: "", category: "", condition: "", location: "" });
     setUploadedImages([]);
     setImagePreviews([]);
+
+    // Award 100 trust points
+    setTrustPoints(prev => prev + 100);
 
     // Show success animation
     setShowSuccessAnimation(true);
@@ -365,6 +369,7 @@ export default function SellerDashboard() {
                 <CheckCircle className="h-10 w-10 text-emerald-600" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-2">Product Listed!</h3>
+              <p className="text-lg text-emerald-700 font-semibold mb-1">🎉 You earned 100 Trust Points!</p>
               <p className="text-lg text-slate-700">Your item has been successfully added to the marketplace</p>
             </div>
           </div>
@@ -597,7 +602,7 @@ export default function SellerDashboard() {
               <div className="text-center">
                 <div className="flex items-center space-x-2">
                   <Star className="h-6 w-6 text-amber-500" />
-                  <span className="text-3xl font-bold text-slate-900">1,247</span>
+                  <span className="text-3xl font-bold text-slate-900">{trustPoints}</span>
                 </div>
                 <p className="text-base font-medium text-slate-700">Trust Points</p>
               </div>

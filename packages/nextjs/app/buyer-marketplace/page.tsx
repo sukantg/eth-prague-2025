@@ -128,6 +128,7 @@ export default function BuyerMarketplace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [likedItems, setLikedItems] = useState<number[]>([]);
+  const [meritPoints] = useState(450);
 
   const categories = ["All", "Electronics", "Fashion", "Furniture", "Books", "Sports"];
 
@@ -265,7 +266,7 @@ export default function BuyerMarketplace() {
               <div className="text-center">
                 <div className="flex items-center space-x-2">
                   <Star className="h-5 w-5 text-amber-500" />
-                  <span className="text-2xl font-bold text-slate-800">892</span>
+                  <span className="text-2xl font-bold text-slate-800">{meritPoints}</span>
                 </div>
                 <p className="text-sm text-slate-600">Merit Points</p>
               </div>
