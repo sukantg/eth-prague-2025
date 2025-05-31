@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CreditCard, Heart, Package, ShoppingCart, User, Wallet } from "lucide-react";
+import { ArrowLeft, CreditCard, Heart, Package, ShoppingCart, Star, User, Wallet } from "lucide-react";
 
 // Mock data for a single product
 const mockProduct = {
@@ -20,54 +20,56 @@ const mockProduct = {
   condition: "Like New",
   likes: 24,
   description:
-    "Genuine leather jacket from the 90s in excellent condition. Made from premium leather with excellent craftsmanship. Shows minimal signs of wear and comes with original lining intact.",
+    "Genuine leather jacket from the 90s in excellent condition. Made from high-quality leather with minimal wear. Features include multiple pockets, adjustable cuffs, and a comfortable lining. Perfect for collectors or those looking for a timeless piece.",
   category: "Fashion",
   currentBids: [
-    { bidder: "John Smith", amount: "150 USDC", timestamp: "2024-03-15T10:30:00" },
-    { bidder: "Sarah Davis", amount: "140 USDC", timestamp: "2024-03-15T09:45:00" },
-    { bidder: "Mike Wilson", amount: "130 USDC", timestamp: "2024-03-15T09:00:00" },
+    { amount: "150 USDC", bidder: "Bob Smith", time: "2 hours ago" },
+    { amount: "140 USDC", bidder: "Charlie Brown", time: "3 hours ago" },
+    { amount: "130 USDC", bidder: "Diana Miller", time: "5 hours ago" },
   ],
+};
+
+// Mock buyer data
+const mockBuyer = {
+  name: "David Wilson",
+  walletAddress: "0x1234...5678",
+  meritPoints: 450,
 };
 
 export default function ProductPage() {
   const [bidAmount, setBidAmount] = useState("");
-  const [bidderName, setBidderName] = useState("");
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentBids, setCurrentBids] = useState(mockProduct.currentBids);
+  const [buyerInfo, setBuyerInfo] = useState<typeof mockBuyer | null>(null);
 
   const handleConnectWallet = () => {
     setIsProcessing(true);
     // Simulate wallet connection
     setTimeout(() => {
       setIsWalletConnected(true);
+      setBuyerInfo(mockBuyer); // Set buyer info when wallet is connected
       setIsProcessing(false);
     }, 1500);
   };
 
   const handlePlaceBid = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bidderName.trim()) {
-      alert("Please enter your name");
+    if (!buyerInfo) {
+      alert("Please connect your wallet first");
       return;
     }
     setIsProcessing(true);
-
-    // Create new bid
-    const newBid = {
-      bidder: bidderName,
-      amount: `${bidAmount} USDC`,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Add new bid to the beginning of the list
-    setCurrentBids(prevBids => [newBid, ...prevBids]);
-
     // Simulate bid placement
     setTimeout(() => {
       setIsProcessing(false);
       setBidAmount("");
-      setBidderName("");
+      // Here you would typically update the bids list
+      const newBid = {
+        amount: `${bidAmount} USDC`,
+        bidder: buyerInfo.name,
+        time: "Just now",
+      };
+      mockProduct.currentBids.unshift(newBid);
     }, 1500);
   };
 
@@ -83,7 +85,7 @@ export default function ProductPage() {
               </div>
               <span className="text-xl font-bold text-slate-800">Trust Bazaar</span>
             </Link>
-            <Link href="/buyer-marketplace?skipVerification=true">
+            <Link href="/buyer-marketplace?verified=true">
               <Button variant="ghost" className="flex items-center space-x-2 hover:bg-slate-100">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Marketplace</span>
@@ -98,25 +100,37 @@ export default function ProductPage() {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Image Section */}
           <div className="space-y-6">
-            <div className="aspect-square bg-white rounded-3xl overflow-hidden shadow-xl relative">
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden aspect-square relative group">
               <Image
                 src={mockProduct.image}
                 alt={mockProduct.title}
                 fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
-            </div>
-            <div className="flex gap-4">
-              <Button variant="outline" className="flex-1 py-6 text-lg rounded-2xl hover:bg-slate-50 transition-colors">
-                <Heart className="h-5 w-5 mr-2" />
-                Add to Wishlist
-              </Button>
-              <Button variant="outline" className="flex-1 py-6 text-lg rounded-2xl hover:bg-slate-50 transition-colors">
-                <Package className="h-5 w-5 mr-2" />
-                Share
-              </Button>
+              <div className="absolute top-4 right-4 flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsWalletConnected(false)}
+                  className={`h-10 w-10 rounded-full ${
+                    isWalletConnected
+                      ? "bg-red-100 text-red-600 hover:bg-red-200"
+                      : "bg-white/80 text-slate-600 hover:bg-white"
+                  }`}
+                >
+                  <Heart className={`h-5 w-5 ${isWalletConnected ? "fill-current" : ""}`} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-full bg-white/80 text-slate-600 hover:bg-white"
+                >
+                  <Package className="h-5 w-5" />
+                </Button>
+              </div>
+              <Badge className="absolute top-4 left-4 bg-emerald-100 text-emerald-800">{mockProduct.condition}</Badge>
             </div>
           </div>
 
@@ -230,69 +244,101 @@ export default function ProductPage() {
                 <Card className="border-0 shadow-xl rounded-3xl overflow-hidden">
                   <CardContent className="p-8 space-y-8">
                     <div className="space-y-6">
-                      <h3 className="text-xl font-semibold text-slate-800">Current Bids</h3>
-                      <div className="space-y-4">
-                        {currentBids.map((bid, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors"
+                      {!buyerInfo ? (
+                        <div className="text-center p-6 bg-slate-50 rounded-2xl">
+                          <p className="text-slate-600 mb-4">Please connect your wallet to place a bid</p>
+                          <Button
+                            onClick={handleConnectWallet}
+                            disabled={isProcessing}
+                            className="bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
                           >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-10 h-10 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center">
-                                <User className="h-5 w-5 text-slate-700" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-slate-800">{bid.bidder}</p>
-                                <p className="text-sm text-slate-500">{new Date(bid.timestamp).toLocaleString()}</p>
-                              </div>
-                            </div>
-                            <p className="text-lg font-bold text-slate-800">{bid.amount}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <form onSubmit={handlePlaceBid} className="space-y-6">
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Your Name</label>
-                            <Input
-                              type="text"
-                              value={bidderName}
-                              onChange={e => setBidderName(e.target.value)}
-                              placeholder="Enter your name"
-                              className="w-full py-6 text-lg rounded-2xl"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Your Bid Amount (USDC)
-                            </label>
-                            <Input
-                              type="number"
-                              value={bidAmount}
-                              onChange={e => setBidAmount(e.target.value)}
-                              placeholder="Enter amount"
-                              className="w-full py-6 text-lg rounded-2xl"
-                              required
-                            />
-                          </div>
+                            {isProcessing ? (
+                              <>
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
+                                Connecting...
+                              </>
+                            ) : (
+                              <>
+                                <Wallet className="h-5 w-5 mr-2" />
+                                Connect Wallet
+                              </>
+                            )}
+                          </Button>
                         </div>
-                        <Button
-                          type="submit"
-                          disabled={isProcessing}
-                          className="w-full bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
-                        >
-                          {isProcessing ? (
-                            <>
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
-                              Placing Bid...
-                            </>
-                          ) : (
-                            "Place Bid"
-                          )}
-                        </Button>
-                      </form>
+                      ) : (
+                        <>
+                          <div className="flex items-center space-x-4 p-4 bg-slate-50 rounded-2xl">
+                            <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center">
+                              <User className="h-6 w-6 text-slate-700" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-800">Your Account</p>
+                              <p className="text-slate-600">{buyerInfo.name}</p>
+                              <p className="text-sm text-slate-500">{buyerInfo.walletAddress}</p>
+                            </div>
+                            <div className="ml-auto text-right">
+                              <div className="flex items-center space-x-1">
+                                <Star className="h-4 w-4 text-amber-500" />
+                                <span className="font-medium text-slate-800">{buyerInfo.meritPoints}</span>
+                              </div>
+                              <p className="text-sm text-slate-500">Merit Points</p>
+                            </div>
+                          </div>
+
+                          <h3 className="text-xl font-semibold text-slate-800">Current Bids</h3>
+                          <div className="space-y-4">
+                            {mockProduct.currentBids.map((bid, index) => (
+                              <div
+                                key={index}
+                                className={`flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors ${
+                                  bid.bidder === buyerInfo.name ? "border-2 border-emerald-500" : ""
+                                }`}
+                              >
+                                <div className="flex items-center space-x-4">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center">
+                                    <User className="h-5 w-5 text-slate-700" />
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-slate-800">{bid.bidder}</p>
+                                    <p className="text-sm text-slate-500">{bid.time}</p>
+                                  </div>
+                                </div>
+                                <p className="text-lg font-bold text-slate-800">{bid.amount}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <form onSubmit={handlePlaceBid} className="space-y-6">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Your Bid Amount (USDC)
+                              </label>
+                              <Input
+                                type="number"
+                                value={bidAmount}
+                                onChange={e => setBidAmount(e.target.value)}
+                                placeholder="Enter amount"
+                                className="w-full py-6 text-lg rounded-2xl"
+                                required
+                              />
+                            </div>
+                            <Button
+                              type="submit"
+                              disabled={isProcessing}
+                              className="w-full bg-slate-800 hover:bg-slate-700 text-white py-6 text-lg rounded-2xl"
+                            >
+                              {isProcessing ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
+                                  Placing Bid...
+                                </>
+                              ) : (
+                                "Place Bid"
+                              )}
+                            </Button>
+                          </form>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
@@ -19,6 +21,7 @@ import {
   ShoppingCart,
   Star,
   User,
+  X,
 } from "lucide-react";
 
 // Mock data for marketplace items
@@ -123,22 +126,32 @@ const mockPastPurchases = [
 ];
 
 export default function BuyerMarketplace() {
+  const searchParams = useSearchParams();
   const [isVerified, setIsVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [likedItems, setLikedItems] = useState<number[]>([]);
   const [meritPoints] = useState(450);
+  const [buyerInfo, setBuyerInfo] = useState({
+    name: "David Wilson",
+    email: "david.wilson@example.com",
+    location: "New York, USA",
+    address: "123 Main Street, Apt 4B, New York, NY 10001",
+  });
 
-  const categories = ["All", "Electronics", "Fashion", "Furniture", "Books", "Sports"];
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedInfo, setEditedInfo] = useState(buyerInfo);
 
   useEffect(() => {
-    // Check if skipVerification is in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("skipVerification") === "true") {
+    // Check if user is already verified from URL parameter
+    const verified = searchParams.get("verified");
+    if (verified === "true") {
       setIsVerified(true);
     }
-  }, []);
+  }, [searchParams]);
+
+  const categories = ["All", "Electronics", "Fashion", "Furniture", "Books", "Sports"];
 
   const handleWorldIDVerification = async () => {
     setIsVerifying(true);
@@ -147,6 +160,17 @@ export default function BuyerMarketplace() {
       setIsVerified(true);
       setIsVerifying(false);
     }, 2000);
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setBuyerInfo(editedInfo);
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedInfo(buyerInfo);
+    setIsEditing(false);
   };
 
   if (!isVerified) {
@@ -279,10 +303,6 @@ export default function BuyerMarketplace() {
                 <p className="text-sm text-slate-600">Merit Points</p>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-800">{mockPastPurchases.length}</div>
-                <p className="text-sm text-slate-600">Purchases</p>
-              </div>
-              <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800">{likedItems.length}</div>
                 <p className="text-sm text-slate-600">Liked Items</p>
               </div>
@@ -294,9 +314,10 @@ export default function BuyerMarketplace() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="marketplace" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             <TabsTrigger value="purchases">My Purchases</TabsTrigger>
+            <TabsTrigger value="profile">My Profile</TabsTrigger>
           </TabsList>
 
           {/* Marketplace Tab */}
@@ -476,6 +497,149 @@ export default function BuyerMarketplace() {
               )}
             </div>
           </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile">
+            <div className="max-w-2xl mx-auto">
+              <Card className="border-0 shadow-xl rounded-3xl overflow-hidden">
+                <CardContent className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center">
+                        <User className="h-8 w-8 text-slate-700" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-slate-800">{buyerInfo.name}</h2>
+                      </div>
+                    </div>
+                    <Button onClick={() => setIsEditing(true)} variant="outline" className="rounded-xl">
+                      Edit Profile
+                    </Button>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                        <p className="text-slate-600">{buyerInfo.email}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Location</label>
+                        <p className="text-slate-600">{buyerInfo.location}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Shipping Address</label>
+                        <p className="text-slate-600">{buyerInfo.address}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="bg-slate-50 rounded-2xl p-6">
+                        <h4 className="text-lg font-semibold text-slate-900 mb-4">Account Status</h4>
+                        <div className="flex items-center space-x-2 text-emerald-600">
+                          <CheckCircle className="h-5 w-5" />
+                          <span className="font-medium">Verified Buyer</span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2">Your account has been verified with World ID</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Profile Edit Modal */}
+          {isEditing && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={handleCancelEdit} />
+              <div className="bg-white rounded-3xl p-8 shadow-2xl animate-scale-up relative w-full max-w-2xl">
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-bold text-slate-900">Edit Profile</h3>
+                    <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="h-8 w-8 p-0">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <form onSubmit={handleSaveProfile} className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="name" className="text-lg font-semibold text-slate-900">
+                          Name *
+                        </Label>
+                        <Input
+                          id="name"
+                          value={editedInfo.name}
+                          onChange={e => setEditedInfo({ ...editedInfo, name: e.target.value })}
+                          placeholder="Enter your name"
+                          required
+                          className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="email" className="text-lg font-semibold text-slate-900">
+                          Email *
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={editedInfo.email}
+                          onChange={e => setEditedInfo({ ...editedInfo, email: e.target.value })}
+                          placeholder="Enter your email"
+                          required
+                          className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="location" className="text-lg font-semibold text-slate-900">
+                          Location *
+                        </Label>
+                        <Input
+                          id="location"
+                          value={editedInfo.location}
+                          onChange={e => setEditedInfo({ ...editedInfo, location: e.target.value })}
+                          placeholder="Enter your location"
+                          required
+                          className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="address" className="text-lg font-semibold text-slate-900">
+                          Shipping Address *
+                        </Label>
+                        <Input
+                          id="address"
+                          value={editedInfo.address}
+                          onChange={e => setEditedInfo({ ...editedInfo, address: e.target.value })}
+                          placeholder="Enter your shipping address"
+                          required
+                          className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-emerald-400 mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelEdit}
+                        className="px-6 py-2 border-slate-200 hover:bg-slate-50"
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white">
+                        Save Changes
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
         </Tabs>
       </div>
     </div>
