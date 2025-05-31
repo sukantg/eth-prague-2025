@@ -137,7 +137,7 @@ export default function HomePage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-2">Verify Your Identity</h3>
                     <p className="text-slate-600">
-                      Connect your wallet and verify with World ID to prove you're a real human.
+                      Connect your wallet and verify with World ID to prove youre a real human.
                     </p>
                   </div>
                 </div>
