@@ -28,7 +28,7 @@ const mockMarketplaceItems = [
     title: "Vintage Leather Jacket",
     price: "120 USDC",
     image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=500&fit=crop",
-    seller: "Alice.eth",
+    seller: "Alice Johnson",
     condition: "Like New",
     likes: 24,
     description: "Genuine leather jacket from the 90s in excellent condition.",
@@ -39,7 +39,7 @@ const mockMarketplaceItems = [
     title: "MacBook Pro 2019",
     price: "850 USDC",
     image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
-    seller: "Bob.eth",
+    seller: "Bob Smith",
     condition: "Good",
     likes: 89,
     description: "13-inch MacBook Pro with Touch Bar, 512GB SSD.",
@@ -50,7 +50,7 @@ const mockMarketplaceItems = [
     title: "Vintage Camera",
     price: "180 USDC",
     image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=500&fit=crop",
-    seller: "Charlie.eth",
+    seller: "Charlie Brown",
     condition: "Fair",
     likes: 45,
     description: "Canon AE-1 film camera with 50mm lens.",
@@ -61,7 +61,7 @@ const mockMarketplaceItems = [
     title: "Designer Handbag",
     price: "400 USDC",
     image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&h=500&fit=crop",
-    seller: "Diana.eth",
+    seller: "Diana Miller",
     condition: "Like New",
     likes: 67,
     description: "Authentic designer handbag with certificate.",
@@ -72,7 +72,7 @@ const mockMarketplaceItems = [
     title: "Gaming Chair",
     price: "150 USDC",
     image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=500&h=500&fit=crop",
-    seller: "Eve.eth",
+    seller: "Eve Wilson",
     condition: "Good",
     likes: 32,
     description: "Ergonomic gaming chair with lumbar support.",
@@ -83,7 +83,7 @@ const mockMarketplaceItems = [
     title: "Wireless Headphones",
     price: "80 USDC",
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-    seller: "Frank.eth",
+    seller: "Frank Davis",
     condition: "Good",
     likes: 56,
     description: "Premium wireless headphones with noise cancellation.",
@@ -98,7 +98,7 @@ const mockPastPurchases = [
     title: "Vintage Watch",
     price: "280 USDC",
     image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=500&h=500&fit=crop",
-    seller: "Grace.eth",
+    seller: "Grace Taylor",
     purchaseDate: "2024-01-15",
     status: "Delivered",
   },
@@ -107,7 +107,7 @@ const mockPastPurchases = [
     title: "Smartphone",
     price: "320 USDC",
     image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop",
-    seller: "Henry.eth",
+    seller: "Henry Clark",
     purchaseDate: "2024-01-10",
     status: "Delivered",
   },
@@ -116,7 +116,7 @@ const mockPastPurchases = [
     title: "Coffee Table",
     price: "95 USDC",
     image: "https://images.unsplash.com/photo-1532372320572-cda25653a26f?w=500&h=500&fit=crop",
-    seller: "Ivy.eth",
+    seller: "Ivy Martinez",
     purchaseDate: "2024-01-05",
     status: "In Transit",
   },
@@ -373,7 +373,7 @@ export default function BuyerMarketplace() {
                       </div>
                       <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white rounded-xl">
                         <ShoppingCart className="h-4 w-4 mr-2" />
-                        Buy Now
+                        Buy or Bid
                       </Button>
                     </CardContent>
                   </Card>
