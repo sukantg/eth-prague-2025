@@ -68,7 +68,7 @@ npx hardhat compile
 ### Deploy
 
 ```bash
-npx hardhat run scripts/deploy.js --network flowEVM
+npx hardhat run deploy/deploy.js --network flowEVM
 ```
 
 ### Verify
