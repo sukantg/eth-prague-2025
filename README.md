@@ -8,7 +8,7 @@ View the live application at [Trust Bazaar](https://trust-bazaar.vercel.app/){:t
 
 ## Overview
 
-Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
+Trust Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
 
 ## Features
 
@@ -48,18 +48,34 @@ cd eth-prague-2025
 yarn install
 ```
 
-## Testnet Setup
+## Environment Setup
 
-1. Add Flow EVM Testnet to MetaMask:
+1. Create a `.env` file in the root directory:
+```bash
+# Deployer wallet private key
+DEPLOY_WALLET_1=your_private_key_here
 
+# Optional: For contract verification
+ETHERSCAN_API_KEY=your_etherscan_api_key
+```
+
+## Network Configuration
+
+### Flow EVM Networks
+
+1. Flow Testnet:
    - Network Name: Flow EVM Testnet
    - RPC Endpoint: https://testnet.evm.nodes.onflow.org
    - Chain ID: 545
    - Currency Symbol: FLOW
    - Block Explorer: https://evm-testnet.flowscan.io
 
-2. Fund your wallet
-   Use the Flow Testnet Faucet to get test tokens
+2. Flow Mainnet:
+   - Network Name: Flow EVM Mainnet
+   - RPC Endpoint: https://mainnet.evm.nodes.onflow.org
+   - Chain ID: 747
+   - Currency Symbol: FLOW
+   - Block Explorer: https://evm.flowscan.io
 
 ## 📜 Contract Deployment
 
@@ -69,16 +85,26 @@ yarn install
 npx hardhat compile
 ```
 
-### Deploy
+### Deploy to Flow Testnet
 
 ```bash
-npx hardhat run scripts/deploy.js --network flowEVM
+npx hardhat run scripts/deploy.ts --network flowTestnet
+```
+
+### Deploy to Flow Mainnet
+
+```bash
+npx hardhat run scripts/deploy.ts --network flow
 ```
 
 ### Verify
 
 ```bash
-npx hardhat verify --network flowEVM <contract_address>
+# For Flow Testnet
+npx hardhat verify --network flowTestnet <contract_address> [constructor_args]
+
+# For Flow Mainnet
+npx hardhat verify --network flow <contract_address> [constructor_args]
 ```
 
 ## 🧾 How It Works (User Flow)
