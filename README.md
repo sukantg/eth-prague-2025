@@ -2,13 +2,9 @@
 
 A Verified P2P Marketplace for Real-World Goods using World ID + Escrow + NFTs
 
-## 🌐 Live Demo
-
-View the live application at [Trust Bazaar](https://trust-bazaar.vercel.app/)
-
 ## Overview
 
-Trust Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
+Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
 
 ## Features
 
@@ -40,44 +36,28 @@ Main smart contract containing:
 - Escrow for sales
 - Receipt confirmation
 
-## 📦 Installation
+## Installation
 
 ```bash
-git@github.com:sukantg/eth-prague-2025.git
+git clone git@github.com:sukantg/eth-prague-2025.git
 cd eth-prague-2025
 yarn install
 ```
 
-## Environment Setup
+## Testnet Setup
 
-1. Create a `.env` file in the root directory:
-```bash
-# Deployer wallet private key
-DEPLOY_WALLET_1=your_private_key_here
+1. Add Flow EVM Testnet to MetaMask:
 
-# Optional: For contract verification
-ETHERSCAN_API_KEY=your_etherscan_api_key
-```
-
-## Network Configuration
-
-### Flow EVM Networks
-
-1. Flow Testnet:
    - Network Name: Flow EVM Testnet
    - RPC Endpoint: https://testnet.evm.nodes.onflow.org
    - Chain ID: 545
    - Currency Symbol: FLOW
    - Block Explorer: https://evm-testnet.flowscan.io
 
-2. Flow Mainnet:
-   - Network Name: Flow EVM Mainnet
-   - RPC Endpoint: https://mainnet.evm.nodes.onflow.org
-   - Chain ID: 747
-   - Currency Symbol: FLOW
-   - Block Explorer: https://evm.flowscan.io
+2. Fund your wallet
+   Use the Flow Testnet Faucet to get test tokens
 
-## 📜 Contract Deployment
+## Contract Deployment
 
 ### Compile
 
@@ -85,26 +65,16 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 npx hardhat compile
 ```
 
-### Deploy to Flow Testnet
+### Deploy
 
 ```bash
-npx hardhat run scripts/deploy.ts --network flowTestnet
-```
-
-### Deploy to Flow Mainnet
-
-```bash
-npx hardhat run scripts/deploy.ts --network flow
+npx hardhat run scripts/deploy.js --network flowEVM
 ```
 
 ### Verify
 
 ```bash
-# For Flow Testnet
-npx hardhat verify --network flowTestnet <contract_address> [constructor_args]
-
-# For Flow Mainnet
-npx hardhat verify --network flow <contract_address> [constructor_args]
+npx hardhat verify --network flowEVM <contract_address>
 ```
 
 ## 🧾 How It Works (User Flow)
