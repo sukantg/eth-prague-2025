@@ -44,16 +44,15 @@ npm install
 
 ##  Testnet Setup
 
-1. Add Flow EVM Testnet (or use local chain for dev)
-```json
-Chain ID: 1134
-RPC: https://evm.testnet.flowchain.xyz
-Currency: tFLOW
-Explorer: https://evm-testnet.flowscan.io
-```
+1. Add Flow EVM Testnet to MetaMask:
+   - Network Name: Flow EVM Testnet
+   - RPC Endpoint: https://testnet.evm.nodes.onflow.org
+   - Chain ID: 545
+   - Currency Symbol: FLOW
+   - Block Explorer: https://evm-testnet.flowscan.io
 
 2. Fund your wallet
-Use Flow Testnet Faucet
+   Use the Flow Testnet Faucet to get test tokens
 
 ## 📜 Contract Deployment
 
