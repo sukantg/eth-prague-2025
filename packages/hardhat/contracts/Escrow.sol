@@ -30,10 +30,13 @@ contract EscrowContract is ReentrancyGuard {
         usdc = IERC20(_usdc);
     }
 
-    function deposit(address seller, address buyer, address tokenAddress, uint256 tokenId, uint256 amount) 
-        external 
-        nonReentrant 
-    {
+    function deposit(
+        address seller,
+        address buyer,
+        address tokenAddress,
+        uint256 tokenId,
+        uint256 amount
+    ) external nonReentrant {
         require(seller != address(0), "Invalid seller address");
         require(buyer != address(0), "Invalid buyer address");
         require(tokenAddress != address(0), "Invalid token address");
