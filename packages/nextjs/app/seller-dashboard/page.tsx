@@ -9,15 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertTriangle,
   ArrowLeft,
+  Calendar,
   Camera,
   CheckCircle,
   Edit,
   Eye,
   Globe,
   Mail,
+  Package,
   Plus,
   Shield,
   Star,
@@ -25,7 +28,6 @@ import {
   User,
   X,
 } from "lucide-react";
-import { Textarea } from "~~/components/ui/textarea";
 
 interface Listing {
   id: number;
@@ -37,6 +39,15 @@ interface Listing {
   likes: number;
   description: string;
   location: string;
+  bids?: Bid[];
+}
+
+interface Bid {
+  id: number;
+  amount: string;
+  bidder: string;
+  timestamp: string;
+  status: "pending" | "accepted" | "rejected";
 }
 
 interface NewProduct {
@@ -55,7 +66,50 @@ interface Profile {
   address?: string;
 }
 
-// Mock data for listings
+// Add mock bids data
+const mockBids: Bid[] = [
+  {
+    id: 1,
+    amount: "110 USDC",
+    bidder: "0x1234...5678",
+    timestamp: "2024-03-15 14:30",
+    status: "pending" as const,
+  },
+  {
+    id: 2,
+    amount: "115 USDC",
+    bidder: "0x8765...4321",
+    timestamp: "2024-03-15 15:45",
+    status: "pending" as const,
+  },
+];
+
+// Add another set of mock bids
+const mockBids2: Bid[] = [
+  {
+    id: 3,
+    amount: "75 USDC",
+    bidder: "0x9876...5432",
+    timestamp: "2024-03-16 09:15",
+    status: "pending" as const,
+  },
+  {
+    id: 4,
+    amount: "80 USDC",
+    bidder: "0x2468...1357",
+    timestamp: "2024-03-16 10:30",
+    status: "pending" as const,
+  },
+  {
+    id: 5,
+    amount: "85 USDC",
+    bidder: "0x1357...2468",
+    timestamp: "2024-03-16 11:45",
+    status: "pending" as const,
+  },
+];
+
+// Update mock listings to include bids
 const mockListings: Listing[] = [
   {
     id: 1,
@@ -67,6 +121,7 @@ const mockListings: Listing[] = [
     likes: 8,
     description: "Genuine leather jacket from the 90s in excellent condition.",
     location: "Prague, Czech Republic",
+    bids: mockBids,
   },
   {
     id: 2,
@@ -89,6 +144,18 @@ const mockListings: Listing[] = [
     likes: 15,
     description: "Canon AE-1 film camera with 50mm lens.",
     location: "Vienna, Austria",
+  },
+  {
+    id: 4,
+    title: "Limited Edition Sneakers",
+    price: "90 USDC",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&h=500&fit=crop",
+    status: "Active",
+    views: 45,
+    likes: 12,
+    description: "Rare Nike Air Jordan 1 High OG in excellent condition, size 42.",
+    location: "Amsterdam, Netherlands",
+    bids: mockBids2,
   },
 ];
 
@@ -624,9 +691,10 @@ export default function SellerDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="add-product" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 max-w-2xl">
+          <TabsList className="grid w-full grid-cols-4 max-w-2xl">
             <TabsTrigger value="add-product">Add Product</TabsTrigger>
             <TabsTrigger value="my-listings">My Listings</TabsTrigger>
+            <TabsTrigger value="pending-bids">Pending Bids</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
 
@@ -914,6 +982,122 @@ export default function SellerDashboard() {
                   </Button>
                 </div>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Pending Bids Tab */}
+          <TabsContent value="pending-bids">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-800">Pending Bids</h2>
+                <p className="text-slate-600">
+                  {listings.filter(listing => listing.bids?.some(bid => bid.status === "pending")).length} items with
+                  bids
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {listings
+                  .filter(listing => listing.bids?.some(bid => bid.status === "pending"))
+                  .map(listing => (
+                    <Card key={listing.id} className="shadow-lg rounded-2xl border-0 overflow-hidden">
+                      <div className="flex flex-col md:flex-row">
+                        {/* Product Image Section */}
+                        <div className="md:w-1/3 relative">
+                          <div className="aspect-square bg-slate-100">
+                            <img
+                              src={listing.image || "/placeholder.svg"}
+                              alt={listing.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute top-4 left-4">
+                            <Badge className="bg-white/90 backdrop-blur-sm text-slate-800 shadow-sm">
+                              {listing.bids?.filter(bid => bid.status === "pending").length} Pending Bids
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* Content Section */}
+                        <div className="md:w-2/3 p-6">
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="text-xl font-bold text-slate-800 mb-2">{listing.title}</h3>
+                              <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                <div className="flex items-center space-x-1">
+                                  <Globe className="h-4 w-4" />
+                                  <span>{listing.location}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>Listed on {new Date().toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3">
+                              {listing.bids
+                                ?.filter(bid => bid.status === "pending")
+                                .sort((a, b) => {
+                                  // Extract numeric values from bid amounts
+                                  const amountA = parseFloat(a.amount.replace(" USDC", ""));
+                                  const amountB = parseFloat(b.amount.replace(" USDC", ""));
+                                  return amountB - amountA; // Sort in descending order
+                                })
+                                .slice(0, 1) // Show only highest bid
+                                .map(bid => (
+                                  <div
+                                    key={bid.id}
+                                    className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
+                                  >
+                                    <div className="flex items-center space-x-3">
+                                      <div className="w-10 h-10 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center shadow-sm">
+                                        <User className="h-5 w-5 text-slate-700" />
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-slate-800">{bid.bidder}</p>
+                                        <div className="flex items-center space-x-2 text-sm text-slate-500">
+                                          <Calendar className="h-3 w-3" />
+                                          <span>{bid.timestamp}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                      <div className="text-right">
+                                        <p className="text-sm text-slate-500">Highest Bid</p>
+                                        <p className="text-lg font-bold text-slate-800">{bid.amount}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+
+                {!listings.some(listing => listing.bids?.some(bid => bid.status === "pending")) && (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Package className="h-8 w-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">No pending bids</h3>
+                    <p className="text-slate-600 mb-4">You dont have any pending bids on your listings.</p>
+                    <Button
+                      onClick={() => {
+                        const element = document.querySelector('[value="my-listings"]');
+                        if (element instanceof HTMLElement) {
+                          element.click();
+                        }
+                      }}
+                      className="bg-slate-800 hover:bg-slate-700 text-white"
+                    >
+                      View Your Listings
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
