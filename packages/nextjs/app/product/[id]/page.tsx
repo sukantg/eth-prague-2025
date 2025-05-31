@@ -231,7 +231,7 @@ export default function ProductPage() {
                         </div>
                         <Button
                           variant="outline"
-                          className="w-full py-6 text-lg rounded-2xl hover:bg-slate-50"
+                          className="w-full py-6 text-lg rounded-2xl hover:bg-slate-50 text-slate-600"
                           onClick={() => setShowCardPayment(true)}
                         >
                           <CreditCard className="h-5 w-5 mr-2" />
