@@ -266,9 +266,23 @@ contract Marketplace is ReentrancyGuard, Pausable, Ownable {
         uint256 feeAmount = (acceptedBid.amount * platformFee) / 10000;
         uint256 sellerAmount = acceptedBid.amount - feeAmount;
 
-        usdc.transfer(item.seller, sellerAmount);
+        // Transfer fee to collector
         usdc.transfer(feeCollector, feeAmount);
-        IERC721(item.tokenAddress).transferFrom(address(this), acceptedBid.bidder, tokenId);
+
+        // Transfer remaining amount to escrow
+        usdc.transfer(escrowContract, sellerAmount);
+
+        // Transfer NFT to escrow
+        IERC721(item.tokenAddress).transferFrom(address(this), escrowContract, item.tokenId);
+
+        // Create escrow record
+        IMarketplaceEscrow(escrowContract).deposit(
+            item.seller,
+            acceptedBid.bidder,
+            item.tokenAddress,
+            item.tokenId,
+            sellerAmount
+        );
 
         // Return other active bids
         for (uint i = 0; i < bids[tokenId].length; i++) {
