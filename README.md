@@ -2,6 +2,8 @@
 
 A Verified P2P Marketplace for Real-World Goods using World ID + Escrow + NFTs
 
+[Visit Trust Bazaar Online - Click here](https://trust-bazaar.vercel.app/)
+
 ## Overview
 
 Proof Bazaar enables users to buy and sell second-hand goods using NFTs and escrowed USDC payments. Only verified human users (via World ID) can list or purchase. All items are represented as NFTs, and transactions go through an escrow flow for buyer/seller trust.
