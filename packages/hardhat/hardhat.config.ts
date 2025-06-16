@@ -12,7 +12,6 @@ import "hardhat-deploy-ethers";
 import { task } from "hardhat/config";
 import generateTsAbis from "./scripts/generateTsAbis";
 import "@openzeppelin/hardhat-upgrades";
-import { FLOW_CONFIG } from "./utils/flowConfig";
 
 // If not set, it uses the hardhat account 0 private key.
 // You can generate a random account with `yarn generate` or `yarn account:import` to import your existing PK
@@ -60,32 +59,12 @@ const config: HardhatUserConfig = {
     },
     // Flow Networks
     flow: {
-      url: FLOW_CONFIG.mainnet.rpcUrl,
+      url: "https://mainnet.evm.nodes.onflow.org",
       accounts: [deployerPrivateKey],
-      chainId: FLOW_CONFIG.mainnet.chainId,
-      gasPrice: FLOW_CONFIG.mainnet.gasPrice,
-      gasMultiplier: FLOW_CONFIG.mainnet.gasMultiplier,
-      timeout: 60000,
-      verify: {
-        etherscan: {
-          apiUrl: `${FLOW_CONFIG.mainnet.explorerUrl}/api`,
-          apiKey: "abc",
-        },
-      },
     },
     flowTestnet: {
-      url: FLOW_CONFIG.testnet.rpcUrl,
+      url: "https://testnet.evm.nodes.onflow.org",
       accounts: [deployerPrivateKey],
-      chainId: FLOW_CONFIG.testnet.chainId,
-      gasPrice: FLOW_CONFIG.testnet.gasPrice,
-      gasMultiplier: FLOW_CONFIG.testnet.gasMultiplier,
-      timeout: 60000,
-      verify: {
-        etherscan: {
-          apiUrl: `${FLOW_CONFIG.testnet.explorerUrl}/api`,
-          apiKey: "abc",
-        },
-      },
     },
     mainnet: {
       url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
@@ -195,18 +174,18 @@ const config: HardhatUserConfig = {
     customChains: [
       {
         network: "flow",
-        chainId: FLOW_CONFIG.mainnet.chainId,
+        chainId: 747,
         urls: {
-          apiURL: `${FLOW_CONFIG.mainnet.explorerUrl}/api`,
-          browserURL: FLOW_CONFIG.mainnet.explorerUrl,
+          apiURL: "https://evm.flowscan.io/api",
+          browserURL: "https://evm.flowscan.io/",
         },
       },
       {
         network: "flowTestnet",
-        chainId: FLOW_CONFIG.testnet.chainId,
+        chainId: 545,
         urls: {
-          apiURL: `${FLOW_CONFIG.testnet.explorerUrl}/api`,
-          browserURL: FLOW_CONFIG.testnet.explorerUrl,
+          apiURL: "https://evm-testnet.flowscan.io/api",
+          browserURL: "https://evm-testnet.flowscan.io/",
         },
       },
     ],
